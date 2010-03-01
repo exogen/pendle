@@ -1,0 +1,5 @@
+*.pyc
+*.sqlite
+*.swp
+.achievements
+initial_data.json
