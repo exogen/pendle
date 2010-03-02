@@ -32,7 +32,7 @@ class ManufacturerAdmin(admin.ModelAdmin):
         if product_count:        
             url = admin_url('changelist', Product, manufacturer=manufacturer)
             link = hyperlink(url, "", title="Browse products", **{'class': 'related-link'})
-            return '<p class="related">%s %s</p>' % (product_count, link)
+            return '<p class="related">%s %s</p>' % (link, product_count)
         else:
             return ""
 
@@ -43,9 +43,10 @@ class ManufacturerAdmin(admin.ModelAdmin):
             url = admin_url('changelist', Asset,
                             product__manufacturer=manufacturer)
             link = hyperlink(url, "", title="Browse assets", **{'class': 'related-link'})
-            return '<p class="related">%s %s</p>' % (asset_count, link)
+            return '<p class="related">%s %s</p>' % (link, asset_count)
         else:
             return ""
+
 
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['__unicode__']
@@ -59,8 +60,8 @@ class ProductAdmin(admin.ModelAdmin):
          admin_order_field='manufacturer__name')
     def list_manufacturer(self, product):
         if product.manufacturer:
-            return "%s %s" % (product.manufacturer,
-                              related_link(product.manufacturer))
+            return "%s %s" % (related_link(product.manufacturer),
+                              product.manufacturer)
         else:
             return ""
 
@@ -93,6 +94,7 @@ class AssetAdmin(admin.ModelAdmin):
     list_filter = ['catalog', 'date_added', 'policy_category', 'condition',
                    'new_barcode']
     list_select_related = True
+    ordering = ['barcode']
     save_as = True
     save_on_top = True
     fieldsets = (
@@ -117,12 +119,12 @@ class AssetAdmin(admin.ModelAdmin):
         product_text = force_unicode(asset.product)
         if len(product_text) > self.product_text_length:
             product_text = product_text[:self.product_text_length] + '&hellip;'
-        return "%s %s" % (product_text, related_link(asset.product))
+        return "%s %s" % (related_link(asset.product), product_text)
 
     @add(list_display, "catalog", allow_tags=True,
          admin_order_field='catalog__name')
     def list_catalog(self, asset):
-        return "%s %s" % (asset.catalog, related_link(asset.catalog))
+        return "%s %s" % (related_link(asset.catalog), asset.catalog)
 
     @add(list_display, "bundle", allow_tags=True,
          admin_order_field='bundle__barcode')

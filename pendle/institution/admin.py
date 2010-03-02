@@ -6,6 +6,7 @@ from pendle.institution.models import (Profile, Department, Course,
                                        ScheduledCourse)
 from pendle.utils import add
 from pendle.utils.html import hyperlink, related_link
+from pendle.utils.urls import admin_url
 
 
 class ProfileInline(admin.StackedInline):
@@ -53,9 +54,15 @@ class DepartmentAdmin(admin.ModelAdmin):
     filter_horizontal = ['users']
     list_display = ['__unicode__', 'subject_code']
 
-    @add(list_display, "users")
-    def group(self, department):
-        pass
+    @add(list_display, "users", allow_tags=True)
+    def list_users(self, department):
+        user_count = department.users.count()
+        if user_count:
+            url = admin_url('changelist', User, departments=department)
+            link = hyperlink(url, "", title="Browse users", **{'class': 'related-link'})
+            return '<p class="related">%s %s</p>' % (link, user_count)
+        else:
+            return ""
 
 
 class ScheduledCourseInline(admin.TabularInline):

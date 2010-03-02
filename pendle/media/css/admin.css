@@ -39,12 +39,10 @@ div.inline-related td.days li {
 
 a.related-link {
     float: right;
-    position: relative;
-    top: 1px;
     width: 13px;
-    height: 13px;
-    background: url('../images/link.png') no-repeat 50% 50%;
-    margin-left: 7px;
+    height: 14px;
+    background: url('../images/link.png') no-repeat 100% 50%;
+    padding-left: 7px;
     opacity: 0.3;
 }
 
