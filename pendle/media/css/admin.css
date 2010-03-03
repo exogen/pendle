@@ -41,9 +41,15 @@ div.inline-related td.days li {
     float: right;
     width: 13px;
     height: 14px;
-    background: url('../images/link.png') no-repeat 100% 50%;
+    background: url('../images/link.png') no-repeat 100% 75%;
     padding-left: 7px;
     opacity: 0.3;
+}
+
+#changelist p.count a.related,
+#changelist p.bundled a.related {
+    background-image: url('../images/search.png');
+    padding-left: 6px;
 }
 
 a.external {
@@ -51,7 +57,7 @@ a.external {
     padding-right: 14px;
 }
 
-#changelist td:hover a.related{
+#changelist tr:hover a.related {
     opacity: 0.7;
 }
 
@@ -59,18 +65,24 @@ a.external {
     opacity: 1.0 !important;
 }
 
-#changelist p.count {
+#changelist td p {
     margin: 0;
     padding: 0;
+}
+
+#changelist p.count,
+#changelist p.bundle,
+#changelist p.bundled {
     text-align: right;
 }
 
-#changelist p.bundle {
+#changelist p.bundled {
+    font-weight: bold;
     padding-right: 1px;
     color: #999;
 }
 
-#changelist p.bundle img {
+#changelist p.bundled img {
     margin-left: 5px;
     vertical-align: -1px;
 }

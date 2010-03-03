@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.contrib.admin.templatetags.admin_list import _boolean_icon
 from django.utils.encoding import force_unicode
+from django.utils.formats import number_format
 
 from pendle.assets.models import (ProductType, PolicyCategory, Manufacturer,
                                   Product, Asset)
 from pendle.utils import add
 from pendle.utils.urls import admin_url
-from pendle.utils.html import hyperlink, change_link
+from pendle.utils.html import hyperlink, change_link, changelist_link
 from pendle.utils.admin import value_or_empty, related_link, count_link
 
 
@@ -14,10 +15,6 @@ class ManufacturerAdmin(admin.ModelAdmin):
     list_display = ['__unicode__']
     list_select_related = True
 
-    @add(list_display, "phone number", admin_order_field='phone_number')
-    def list_phone_number(self, manufacturer):
-        return manufacturer.phone_number or ""
-    
     @add(list_display, "URL", allow_tags=True, admin_order_field='url')
     def list_url(self, manufacturer):
         if manufacturer.url:
@@ -27,27 +24,25 @@ class ManufacturerAdmin(admin.ModelAdmin):
         else:
             return ""
 
-    @add(list_display, "products", allow_tags=True)
-    def list_products(self, manufacturer):
-        product_count = manufacturer.products.count()
-        if product_count:
-            link = changelist_link(Product, "", {'manufacturer': manufacturer})
-            return '<p class="count">%s %s</p>' % (link, product_count)
-        else:
-            return ""
+    add(list_display)(value_or_empty(Manufacturer, 'phone_number'))
+    add(list_display)(count_link(Manufacturer, 'products'))
 
     @add(list_display, "assets", allow_tags=True)
     def list_assets(self, manufacturer):
-        asset_count = Asset.objects.filter(product__manufacturer=manufacturer).count()
+        assets = Asset.objects.filter(product__manufacturer=manufacturer)
+        asset_count = assets.count()
         if asset_count:
-            link = changelist_link(Asset, "", {'product__manufacturer': manufacturer})
-            return '<p class="count">%s %s</p>' % (link, asset_count)
+            link = changelist_link(Asset, "",
+                                   {'product__manufacturer': manufacturer},
+                                   title="Find assets with this manufacturer")
+            return '<p class="count">%s %s</p>' % (link,
+                                                   number_format(asset_count))
         else:
             return ""
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', related_link(Product.manufacturer),
+    list_display = ['__unicode__', related_link(Product, 'manufacturer'),
                     related_link(Product, 'product_type'), 'model_name',
                     value_or_empty(Product, 'model_year'),
                     count_link(Product, 'assets')]
@@ -59,8 +54,7 @@ class ProductAdmin(admin.ModelAdmin):
     
 
 class AssetAdmin(admin.ModelAdmin):
-    list_display = ['barcode', related_link(Asset.product),
-                    related_link(Asset.catalog)]
+    list_display = ['barcode', related_link(Asset, 'product')]
     list_filter = ['catalog', 'date_added', 'policy_category', 'condition',
                    'new_barcode']
     list_select_related = True
@@ -88,12 +82,13 @@ class AssetAdmin(admin.ModelAdmin):
     def list_bundle(self, asset):
         bundled_assets = Asset.objects.filter(bundle=asset).count()
         if bundled_assets:
-            text = "%d bundled" % bundled_assets
-            icon = _boolean_icon(True)
-            value = '<p class="related bundle">%s %s</p>' % (text, icon)
+            text = "%s bundled" % number_format(bundled_assets)
+            link = changelist_link(Asset, "", {'bundle': asset},
+                                   title="Find bundled assets")
+            value = '<p class="bundled">%s %s</p>' % (link, text)
         elif asset.bundle:
-            link = change_link(asset.bundle)
-            value = '<p class="related">%s %s</p>' % (link, asset.bundle)
+            link = change_link(asset.bundle, title="Go to bundle")
+            value = '<p class="bundle">%s %s</p>' % (link, asset.bundle)
         else:
             value = ""
         return value

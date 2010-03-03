@@ -23,7 +23,7 @@ def changelist_link(model, text="", params=(), attrs=(), **kwargs):
     attrs = dict(attrs)
     attrs.update(kwargs)
     verbose_name_plural = force_unicode(model._meta.verbose_name_plural)
-    attrs.setdefault('title', "Browse %s" % verbose_name_plural)
+    attrs.setdefault('title', "Find %s" % verbose_name_plural)
     attrs.setdefault('class', 'related')
     url = admin_url('changelist', model, params=params)
     return hyperlink(url, text, attrs)

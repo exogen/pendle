@@ -46,7 +46,7 @@ class PendleUserAdmin(UserAdmin):
 
 
 class PendleGroupAdmin(GroupAdmin):
-    pass
+    list_display = ['__unicode__']
 
 
 class DepartmentAdmin(admin.ModelAdmin):

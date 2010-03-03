@@ -1,3 +1,4 @@
+import inspect
 from datetime import datetime
 
 
@@ -37,12 +38,14 @@ def add(list_, short_description=None, position=None, **kwargs):
         if isinstance(f, basestring):
             list_.append(f)
         else:
+            num_args = len(inspect.getargspec(f)[0])
+            func_value = f if num_args == 1 else f.__name__
             for key, value in kwargs.iteritems():
                 setattr(f, key, value)
             if position is None:
-                list_.append(f.__name__)
+                list_.append(func_value)
             else:
-                list_.insert(position, f.__name__)
+                list_.insert(position, func_value)
             return f
     return decorate
 
