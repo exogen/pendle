@@ -86,3 +86,10 @@ a.external {
     margin-left: 5px;
     vertical-align: -1px;
 }
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input {
+    -moz-border-radius: 4px;
+}

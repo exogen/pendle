@@ -8,9 +8,7 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    # Example:
-    # (r'^pendle/', include('pendle.foo.urls')),
-
+    url(r'^grappelli/', include('grappelli.urls')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

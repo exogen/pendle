@@ -9,11 +9,21 @@ from pendle.utils import add
 from pendle.utils.urls import admin_url
 from pendle.utils.html import hyperlink, change_link, changelist_link
 from pendle.utils.admin import value_or_empty, related_link, count_link
+from pendle.utils.text import truncate
+
+
+class ProductTypeAdmin(admin.ModelAdmin):
+    list_display = ['__unicode__', count_link(ProductType, 'products')]
+
+
+class PolicyCategoryAdmin(admin.ModelAdmin):
+    list_display = ['__unicode__', count_link(PolicyCategory, 'assets')]
 
 
 class ManufacturerAdmin(admin.ModelAdmin):
     list_display = ['__unicode__']
     list_select_related = True
+    search_fields = ['name', 'url']
 
     @add(list_display, "URL", allow_tags=True, admin_order_field='url')
     def list_url(self, manufacturer):
@@ -42,22 +52,28 @@ class ManufacturerAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', related_link(Product, 'manufacturer'),
+    list_display = [related_link(Product, 'manufacturer'),
                     related_link(Product, 'product_type'), 'model_name',
                     value_or_empty(Product, 'model_year'),
                     count_link(Product, 'assets')]
-    list_display_links = ['__unicode__']
     list_filter = ['date_added', 'product_type']
     search_fields = ['title', 'manufacturer__name', 'description',
                      'model_name']
     ordering = ['-date_added']
     
+    @add(list_display, "product", 0, allow_tags=True)
+    def list_name(self, product):
+        return truncate(product, 60)
+
 
 class AssetAdmin(admin.ModelAdmin):
     list_display = ['barcode', related_link(Asset, 'product')]
     list_filter = ['catalog', 'date_added', 'policy_category', 'condition',
                    'new_barcode']
     list_select_related = True
+    search_fields = ['barcode', 'product__manufacturer__name',
+                     'product__title', 'product__description',
+                     'product__model_name', 'product__model_year']
     ordering = ['barcode']
     save_as = True
     save_on_top = True
@@ -94,8 +110,8 @@ class AssetAdmin(admin.ModelAdmin):
         return value
 
 
-admin.site.register(ProductType)
-admin.site.register(PolicyCategory)
+admin.site.register(ProductType, ProductTypeAdmin)
+admin.site.register(PolicyCategory, PolicyCategoryAdmin)
 admin.site.register(Manufacturer, ManufacturerAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Asset, AssetAdmin)

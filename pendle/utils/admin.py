@@ -16,6 +16,23 @@ def value_or_empty(model, attr):
     column.admin_order_field = attr
     return column
 
+def related_list(model, attr, short_description=None, **kwargs):
+    field, model_, direct, m2m = model._meta.get_field_by_name(attr)
+    if m2m and direct:
+        related = field.related
+    else:
+        field, related = field.field, field
+    def column(obj):
+        query_set = getattr(obj, attr).all()
+        return ", ".join(map(force_unicode, query_set))
+    column.allow_tags = True
+    if short_description is None:
+        short_description = field.verbose_name if direct else attr
+    column.short_description = force_unicode(short_description)
+    for key, value in kwargs.items():
+        setattr(column, key, value)
+    return column
+
 def related_link(model, attr, **kwargs):
     field, model_, direct, m2m = model._meta.get_field_by_name(attr)
     def column(obj):
@@ -32,18 +49,19 @@ def related_link(model, attr, **kwargs):
 
 def count_link(model, attr, short_description=None, **kwargs):
     field, model_, direct, m2m = model._meta.get_field_by_name(attr)
-    if m2m:
+    if m2m and direct:
         related = field.related
     else:
         field, related = field.field, field
     def column(obj):
         if model is related.parent_model:
             related_model = related.model
-            accessor = field.name
+            field_name = field.name
         else:
             related_model = related.parent_model
-            accessor = related.get_accessor_name()
-        query = {accessor: obj}
+            field_name = related.get_accessor_name()
+        query = {'%s__%s__exact' % (field_name,
+                                    related_model._meta.pk.column): obj.pk}
         count = getattr(obj, attr).filter(**query).count()
         if count:
             if m2m:

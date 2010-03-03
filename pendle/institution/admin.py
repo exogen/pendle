@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
+from django.utils.formats import number_format
 
 from pendle.institution.models import (Profile, Department, Course,
                                        ScheduledCourse)
 from pendle.utils import add
-from pendle.utils.admin import count_link
+from pendle.utils.html import changelist_link
+from pendle.utils.admin import related_list, count_link
 
 
 class ProfileInline(admin.StackedInline):
@@ -34,19 +36,26 @@ class PendleUserAdmin(UserAdmin):
     def id_number(self, user):
         return user.get_profile().id_number or ""
 
-    list_display += ['email']
-
-    @add(list_display, "departments", admin_order_field='departments__name')
-    def department(self, user):
-        return u", ".join(map(unicode, user.departments.all()))
-
-    @add(list_display, "groups", admin_order_field='groups__name')
-    def group(self, user):
-        return u", ".join(map(unicode, user.groups.all()))
+    list_display += ['email',
+                     related_list(User, 'departments',
+                                  admin_order_field='departments__name'),
+                     related_list(User, 'groups',
+                                  admin_order_field='groups__name')]
 
 
 class PendleGroupAdmin(GroupAdmin):
     list_display = ['__unicode__']
+
+    @add(list_display, "users", allow_tags=True)
+    def list_users(self, group):
+        user_count = group.user_set.count()
+        if user_count:
+            link = changelist_link(User, "", {'groups__id__exact': group},
+                                   title="Find users in this group")
+            return '<p class="count">%s %s</p>' % (link,
+                                                   number_format(user_count))
+        else:
+            return ""
 
 
 class DepartmentAdmin(admin.ModelAdmin):

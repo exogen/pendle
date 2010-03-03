@@ -4,7 +4,7 @@ from pendle.catalog.models import (ReservationDuration, FinePolicy,
                                    Requirements, Catalog, Period)
 from pendle.catalog.forms import InlinePeriodForm
 from pendle.utils import add
-from pendle.utils.admin import count_link
+from pendle.utils.admin import related_list, count_link
 
 
 class ReservationDurationAdmin(admin.ModelAdmin):
@@ -21,16 +21,12 @@ class ReservationDurationAdmin(admin.ModelAdmin):
 
 
 class FinePolicyAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__']
+    list_display = ['__unicode__', related_list(FinePolicy, 'categories')]
     list_select_related = True
     
     fieldsets = [(None, {'fields': ['per_day', 'per_period',
                                     'per_hour', 'flat_fee'],
                          'classes': ['wide']})]
-
-    @add(list_display, "policy categories")
-    def list_categories(self, fine_policy):
-        return u", ".join(map(unicode, fine_policy.categories.all()))
 
 class RequirementsAdmin(admin.ModelAdmin):
     filter_horizontal = ['departments', 'courses', 'training']
