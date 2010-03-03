@@ -88,8 +88,8 @@ a.external {
 }
 
 .button,
-input[type="submit"],
-input[type="button"],
+input[type='submit'],
+input[type='button'],
 .submit-row input {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;

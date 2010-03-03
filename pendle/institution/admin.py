@@ -5,6 +5,7 @@ from django.utils.formats import number_format
 
 from pendle.institution.models import (Profile, Department, Course,
                                        ScheduledCourse)
+from pendle.institution.forms import ScheduledCourseForm
 from pendle.utils import add
 from pendle.utils.html import changelist_link
 from pendle.utils.admin import related_list, count_link
@@ -66,8 +67,8 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 class ScheduledCourseInline(admin.TabularInline):
     model = ScheduledCourse
+    form = ScheduledCourseForm
     extra = 0
-    filter_horizontal = ['students']
 
 
 class CourseAdmin(admin.ModelAdmin):
