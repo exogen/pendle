@@ -92,4 +92,12 @@ input[type="submit"],
 input[type="button"],
 .submit-row input {
     -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+}
+
+#changelist #toolbar form #searchbar {
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
 }
