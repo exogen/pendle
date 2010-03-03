@@ -5,8 +5,7 @@ from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from pendle.institution.models import (Profile, Department, Course,
                                        ScheduledCourse)
 from pendle.utils import add
-from pendle.utils.html import hyperlink, related_link
-from pendle.utils.urls import admin_url
+from pendle.utils.admin import count_link
 
 
 class ProfileInline(admin.StackedInline):
@@ -29,7 +28,7 @@ class PendleUserAdmin(UserAdmin):
 
     for name, options in UserAdmin.fieldsets:
         if name in ("Permissions", "Important dates"):
-            options['classes'] = ('collapse',)
+            options['classes'] = ['collapse']
 
     @add(list_display, "ID number", admin_order_field='profile__id_number')
     def id_number(self, user):
@@ -52,17 +51,8 @@ class PendleGroupAdmin(GroupAdmin):
 
 class DepartmentAdmin(admin.ModelAdmin):
     filter_horizontal = ['users']
-    list_display = ['__unicode__', 'subject_code']
-
-    @add(list_display, "users", allow_tags=True)
-    def list_users(self, department):
-        user_count = department.users.count()
-        if user_count:
-            url = admin_url('changelist', User, departments=department)
-            link = hyperlink(url, "", title="Browse users", **{'class': 'related-link'})
-            return '<p class="related">%s %s</p>' % (link, user_count)
-        else:
-            return ""
+    list_display = ['__unicode__', 'subject_code',
+                    count_link(Department, 'users')]
 
 
 class ScheduledCourseInline(admin.TabularInline):

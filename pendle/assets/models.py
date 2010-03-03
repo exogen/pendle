@@ -55,14 +55,13 @@ class Manufacturer(models.Model):
 class Product(models.Model):
     manufacturer = models.ForeignKey(Manufacturer, null=True, blank=True,
                                      related_name='products')
-    product_type = models.ForeignKey(ProductType, null=True, blank=True,
-        related_name='products',
+    product_type = models.ForeignKey(ProductType, verbose_name="type",
+        null=True, blank=True, related_name='products',
         help_text="Categorize this product to group it with like items and "
                   "enable additional fields.")
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    model_name = models.CharField("model", max_length=200,
-                                  blank=True)
+    model_name = models.CharField("model", max_length=200, blank=True)
     model_year = models.PositiveSmallIntegerField(null=True, blank=True)
     legacy_id = models.IntegerField("legacy ID", null=True, blank=True,
                                     editable=False)

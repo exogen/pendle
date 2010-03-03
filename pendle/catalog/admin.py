@@ -24,14 +24,13 @@ class FinePolicyAdmin(admin.ModelAdmin):
     list_display = ['__unicode__']
     list_select_related = True
     
-    @add(list_display)
-    def default_for_catalogs(self, fine_policy):
-        return u", ".join(map(unicode, fine_policy.catalogs.all()))
+    fieldsets = [(None, {'fields': ['per_day', 'per_period',
+                                    'per_hour', 'flat_fee'],
+                         'classes': ['wide']})]
 
-    @add(list_display)
-    def used_by_categories(self, fine_policy):
+    @add(list_display, "policy categories")
+    def list_categories(self, fine_policy):
         return u", ".join(map(unicode, fine_policy.categories.all()))
-
 
 class RequirementsAdmin(admin.ModelAdmin):
     filter_horizontal = ['departments', 'courses', 'training']
@@ -49,7 +48,7 @@ class CatalogAdmin(admin.ModelAdmin):
     inlines = [PeriodInline]
     
     @add(list_display, "assets")
-    def asset_count(self, catalog):
+    def list_assets(self, catalog):
         return number_format(catalog.assets.count())
 
 

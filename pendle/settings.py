@@ -27,7 +27,7 @@ DATABASES = {
 }
 
 if DEBUG:
-    CACHE_BACKEND = 'memcached://127.0.0.1:11211/'
+    CACHE_BACKEND = 'johnny.backends.memcached://127.0.0.1:11211/'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -75,8 +75,8 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    #'johnny.middleware.LocalStoreClearMiddleware',
-    #'johnny.middleware.QueryCacheMiddleware',
+    'johnny.middleware.LocalStoreClearMiddleware',
+    'johnny.middleware.QueryCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -100,7 +100,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     #'devserver',
     'debug_toolbar',
-    #'johnny',
+    'johnny',
     'pendle.utils',
     'pendle.institution',
     'pendle.catalog',
