@@ -105,6 +105,7 @@ INSTALLED_APPS = (
     'pendle.institution',
     'pendle.catalog',
     'pendle.assets',
+    'pendle.reservations',
 )
 
 DEVSERVER_MODULES = (
