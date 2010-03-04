@@ -3,16 +3,25 @@ import logging
 from django.db import models
 from django.db.models import signals
 from django.contrib.auth.models import User, Group
+from django.utils.safestring import mark_safe
 
 from pendle.utils import current_year
-#from pendle.utils.cache import CachedManager
 
 
 log = logging.getLogger(__name__)
 UID = __name__
-#MANAGER_TIMEOUT = 28800
 
-#Group.add_to_class('objects', CachedManager(timeout=MANAGER_TIMEOUT))
+def user_label(user, template="%(name)s (%(username)s)", allow_tags=False):
+    label = template % {'name': user.get_full_name(),
+                        'first': user.first_name,
+                        'last': user.last_name,
+                        'username': user.username}
+    if allow_tags:
+        label = mark_safe(label)
+    return label
+
+User.__unicode__ = user_label
+User._meta.ordering = ('last_name', 'first_name')
 
 class Profile(models.Model):
     YEAR_CHOICES = ((1, "1: Freshman"),
@@ -34,7 +43,6 @@ class Profile(models.Model):
     signed_agreement = models.BooleanField(default=False,
         help_text="User has signed the equipment agreement form.")
 
-    #objects = CachedManager(timeout=MANAGER_TIMEOUT)
 
     def __unicode__(self):
         return u"%s's Profile" % (self.user.get_full_name() or self.user)
@@ -47,7 +55,6 @@ class Department(models.Model):
     users = models.ManyToManyField(User, related_name='departments',
                                    blank=True,
                                    help_text="People in this department.")
-    #objects = CachedManager(timeout=MANAGER_TIMEOUT)
 
     class Meta:
         ordering = ['name']

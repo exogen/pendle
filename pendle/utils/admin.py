@@ -43,6 +43,7 @@ def related_link(model, attr, **kwargs):
             return ""
     column.allow_tags = True
     column.short_description = force_unicode(field.verbose_name)
+    column.admin_order_field = field.name
     for key, value in kwargs.items():
         setattr(column, key, value)
     return column

@@ -9,13 +9,17 @@ from pendle.assets.models import Asset
 
 class Transaction(models.Model):
     catalog = models.ForeignKey(Catalog, related_name='transactions')
-    staff_user = models.ForeignKey(User, related_name='staff_transactions',
-                                   limit_choices_to={'is_staff': True})
+    staff_member = models.ForeignKey(User, related_name='staff_transactions',
+                                     limit_choices_to={'is_staff': True})
     customer = models.ForeignKey(User, related_name='transactions')
     timestamp = models.DateTimeField(default=datetime.now)
+    staff_notes = models.TextField(blank=True)
 
     class Meta:
         ordering = ['-timestamp']
+
+    def __unicode__(self):
+        return u"Transaction #%d" % self.id
 
 
 class Reservation(models.Model):
@@ -33,4 +37,5 @@ class Reservation(models.Model):
                            ('asset', 'transaction_in')]
         ordering = ['-transaction_out', 'asset']
 
-
+    def __unicode__(self):
+        return u"%s in %s" % (self.asset, self.transaction_out)

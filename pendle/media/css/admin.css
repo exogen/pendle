@@ -105,3 +105,13 @@ input[type='button'],
 .inline-group .aligned .graduation_date label.inline {
     width: 9em;
 }
+
+#transaction_form .aligned label {
+    width: 10em;
+}
+
+#transaction_form .aligned p,
+#transaction_form .aligned ul {
+    margin-left: 9em;
+}
+
