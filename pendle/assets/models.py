@@ -88,11 +88,11 @@ class Asset(models.Model):
     catalog = models.ForeignKey(Catalog, related_name='assets')
     product = models.ForeignKey(Product, related_name='assets')
     bundle = models.ForeignKey('self', null=True, blank=True,
-                               related_name='bundle_assets')
+        related_name='bundle_assets',
+        help_text="The bundle in which this asset is included.")
     bundle_order = models.IntegerField(blank=True, null=True)
     barcode = models.CharField(max_length=75)
-    new_barcode = models.BooleanField("needs new barcode", default=True,
-        help_text="Does this asset need a new barcode printed?")
+    new_barcode = models.BooleanField("needs new barcode printed", default=True)
     condition = models.CharField(max_length=30, choices=CONDITION_CHOICES,
         default='like_new',
         help_text="Select the closest description of the asset's condition.")

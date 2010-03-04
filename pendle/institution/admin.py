@@ -9,6 +9,7 @@ from pendle.institution.forms import ScheduledCourseForm
 from pendle.utils import add
 from pendle.utils.html import changelist_link
 from pendle.utils.admin import related_list, count_link
+from pendle.utils.forms import UserMultipleChoiceField
 
 
 class ProfileInline(admin.StackedInline):
@@ -17,6 +18,11 @@ class ProfileInline(admin.StackedInline):
     max_num = 1
     can_delete = False
     verbose_name_plural = "profile"
+
+    fieldsets = [
+        (None, {'fields': ('id_number', 'phone_number', 'address',
+                           ('year', 'graduation_date'), 'staff_notes',
+                           'picture', 'signed_agreement')})]
 
 
 class PendleUserAdmin(UserAdmin):
@@ -63,6 +69,13 @@ class DepartmentAdmin(admin.ModelAdmin):
     filter_horizontal = ['users']
     list_display = ['__unicode__', 'subject_code',
                     count_link(Department, 'users')]
+
+    def formfield_for_manytomany(self, db_field, request, **kwargs):
+        if db_field.name == 'users':
+            kwargs.setdefault('form_class', UserMultipleChoiceField)
+            return db_field.formfield(**kwargs)
+        return super(DepartmentAdmin, self).formfield_for_manytomany(
+            db_field, request, **kwargs)
 
 
 class ScheduledCourseInline(admin.TabularInline):

@@ -91,8 +91,8 @@ a.external {
 input[type='submit'],
 input[type='button'],
 .submit-row input {
-    -moz-border-radius: 4px;
-    -webkit-border-radius: 4px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
 }
 
 #changelist #toolbar form #searchbar {
@@ -100,4 +100,8 @@ input[type='button'],
     -webkit-border-radius: 10px;
     padding-left: 5px !important;
     padding-right: 5px !important;
+}
+
+.inline-group .aligned .graduation_date label.inline {
+    width: 9em;
 }

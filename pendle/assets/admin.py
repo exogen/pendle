@@ -15,9 +15,25 @@ from pendle.utils.text import truncate
 class ProductTypeAdmin(admin.ModelAdmin):
     list_display = ['__unicode__', count_link(ProductType, 'products')]
 
+    @add(list_display, "assets", allow_tags=True)
+    def list_assets(self, product_type):
+        assets = Asset.objects.filter(product__product_type=product_type)
+        asset_count = assets.count()
+        if asset_count:
+            link = changelist_link(Asset, "",
+                                   {'product__product_type': product_type},
+                                   title="Find assets with this product type")
+            return '<p class="count">%s %s</p>' % (link,
+                                                   number_format(asset_count))
+        else:
+            return ""
 
 class PolicyCategoryAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', count_link(PolicyCategory, 'assets')]
+    list_display = ['__unicode__',
+                    value_or_empty(PolicyCategory, 'fine_policy'),
+                    value_or_empty(PolicyCategory, 'reservation_duration'),
+                    value_or_empty(PolicyCategory, 'requirements'),
+                    count_link(PolicyCategory, 'assets')]
 
 
 class ManufacturerAdmin(admin.ModelAdmin):
@@ -60,6 +76,9 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['title', 'manufacturer__name', 'description',
                      'model_name']
     ordering = ['-date_added']
+    fieldsets = [(None, {'fields': ['manufacturer', 'product_type',
+                                    'title', 'description',
+                                    ('model_name', 'model_year')]})]
     
     @add(list_display, "product", 0, allow_tags=True)
     def list_name(self, product):
@@ -77,20 +96,19 @@ class AssetAdmin(admin.ModelAdmin):
     ordering = ['barcode']
     save_as = True
     save_on_top = True
-    fieldsets = (
-        (None, {'fields': ('catalog', 'product', 'barcode', 'bundle')}),
+    fieldsets = [
+        (None, {'fields': ('catalog', 'product', ('barcode', 'new_barcode'), 'bundle')}),
         ("Status", {'fields': ('condition', 'condition_details',
-                               'staff_notes', 'new_barcode')}),
-        ("Details", {'fields': ('serial_number', 'color',
-                                'warranty_details')}),
-        ("Policies", {
-            'classes': ('collapse', 'wide'),
-            'fields': ('policy_category', 'reservation_duration',
-                       'fine_policy', 'requirements', 'reservable')}),
+                               'staff_notes')}),
+        ("Details", {'fields': ('serial_number', 'color')}),
         ("Purchase information", {
             'classes': ('collapse', 'wide'),
             'fields': ('purchase_date', 'purchase_vendor',
-                       'purchase_order')}))
+                       'purchase_order', 'warranty_details')}),
+        ("Policies", {
+            'classes': ('collapse', 'wide'),
+            'fields': ('policy_category', 'reservation_duration',
+                       'fine_policy', 'requirements', 'reservable')})]
     product_text_length = 75
 
     @add(list_display, "bundle", allow_tags=True,
