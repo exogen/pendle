@@ -42,7 +42,16 @@ class CatalogAdmin(admin.ModelAdmin):
     list_display = ['name', 'online', count_link(Catalog, 'assets')]
     list_filter = ['online']
     inlines = [PeriodInline]
-    
+    fieldsets = [
+        (None, {'fields': ['name', 'online']}),
+        ("Policies", {'fields': ['default_reservation_duration',
+                                 'default_fine_policy',
+                                 'default_requirements'],
+                      'classes': ['wide']}),
+        ("Receipts", {'fields': ['receipt_prologue', 'receipt_epilogue',
+                                 'receipt_signature'],
+                      'classes': ['wide']})]
+
 
 admin.site.register(ReservationDuration, ReservationDurationAdmin)
 admin.site.register(FinePolicy, FinePolicyAdmin)
