@@ -17,11 +17,11 @@ class ProductTypeAdmin(admin.ModelAdmin):
 
     @add(list_display, "assets", allow_tags=True)
     def list_assets(self, product_type):
-        assets = Asset.objects.filter(product__product_type=product_type)
+        query = {'product__product_type': product_type}
+        assets = Asset.objects.filter(**query)
         asset_count = assets.count()
         if asset_count:
-            link = changelist_link(Asset, "",
-                                   {'product__product_type': product_type},
+            link = changelist_link(Asset, "", query,
                                    title="Find assets with this product type")
             return '<p class="count">%s %s</p>' % (link,
                                                    number_format(asset_count))
@@ -55,11 +55,11 @@ class ManufacturerAdmin(admin.ModelAdmin):
 
     @add(list_display, "assets", allow_tags=True)
     def list_assets(self, manufacturer):
-        assets = Asset.objects.filter(product__manufacturer=manufacturer)
+        query = {'product__manufacturer': manufacturer}
+        assets = Asset.objects.filter(**query)
         asset_count = assets.count()
         if asset_count:
-            link = changelist_link(Asset, "",
-                                   {'product__manufacturer': manufacturer},
+            link = changelist_link(Asset, "", query,
                                    title="Find assets with this manufacturer")
             return '<p class="count">%s %s</p>' % (link,
                                                    number_format(asset_count))
