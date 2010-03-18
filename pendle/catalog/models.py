@@ -1,6 +1,7 @@
 import calendar
 
 from django.db import models
+from django.conf import settings
 from django.utils.translation import ungettext as _n
 
 from pendle.institution.models import Department, Course, Training
@@ -87,6 +88,13 @@ class Requirements(models.Model):
         return u", ".join(requirements)
 
 
+class CatalogManager(models.Manager):
+    def get_or_default(self, id=None):
+        if id is None:
+            id = settings.DEFAULT_CATALOG
+        return self.get(id=id)
+
+
 class Catalog(models.Model):
     name = models.CharField(max_length=75, unique=True)
     online = models.BooleanField(default=True,
@@ -111,6 +119,8 @@ class Catalog(models.Model):
         help_text="Text to show at the bottom of receipts. " + MARKDOWN_LINK)
     receipt_signature = models.BooleanField("signature on receipts",
         default=False, help_text="Show a signature line on receipts.")
+
+    objects = CatalogManager()
 
     def __unicode__(self):
         return self.name

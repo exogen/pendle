@@ -1,0 +1,27 @@
+#content h2.catalog {
+    font-size: 11px;
+    font-weight: normal;
+    color: #999;
+}
+
+#customer-form label {
+    float: left;
+    width: 90px;
+    line-height: 2;
+    color: #666;
+}
+
+#customer-form p.help {
+    margin-left: 90px;
+}
+
+#id_query {
+    font-size: 12px;
+    line-height: 1.5;
+    margin-top: 0;
+    width: 36em;
+}
+
+#id_query:focus {
+    background-color: #ffc;
+}

@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/scan.css" />
+{% endblock %}
+
+
+{% block bodyclass %}scan{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo; Scan
+</div>
+{% endblock %}
+
+{% block content %}
+
+<h2 class="catalog">{{ catalog }}</h2>
+
+<div id="scan-customer">
+  <form id="customer-form" method="POST" action="{% url reservations:new transaction_key %}">
+    <h2>Customer</h2>
+    <div>
+      {{ customer_form.query.label_tag }} {{ customer_form.query }}
+      <p class="help">{{ customer_form.query.help_text }}</p>
+      {{ customer_form.customer }}
+    </div>
+  </form>
+</div>
+
+{% endblock %}

@@ -119,3 +119,22 @@ input[type='button'],
     margin-left: 9em;
 }
 
+#fines-group td.notes textarea,
+#fine_payments-group td.notes textarea {
+    width: auto;
+    height: 3em;
+}
+
+#changelist p.fine {
+    text-align: right;
+    color: #999;
+}
+
+#changelist p.fine.due {
+    font-weight: bold;
+    color: #f44;
+}
+
+#profile_set-group textarea.vLargeTextField {
+    height: 4.5em;
+}

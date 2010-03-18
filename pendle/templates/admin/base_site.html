@@ -15,7 +15,7 @@
 {% block nav-global %}
 {% if user.is_authenticated and user.is_staff %}
 <div id="checkout-tools">
-    <a href="{# url catalog-scan #}">Scan</a> &bull;
+    <a href="{% url reservations:scan %}">Scan</a> &bull;
     <a href="{% url admin:assets_product_changelist %}">Products</a> &bull;
     <a href="{% url admin:assets_asset_changelist %}">Assets</a> &bull;
     <a href="{% url admin:auth_user_changelist %}">Users</a> &bull;

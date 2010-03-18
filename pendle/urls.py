@@ -10,6 +10,8 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^admin/', include('pendle.assets.urls', namespace='assets', 
                             app_name='assets')),
+    url(r'^admin/', include('pendle.reservations.urls', namespace='reservations', 
+                            app_name='reservations')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

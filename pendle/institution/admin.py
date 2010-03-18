@@ -6,7 +6,8 @@ from django.utils.formats import number_format
 from pendle.institution.models import (Profile, Department, Course,
                                        ScheduledCourse)
 from pendle.institution.forms import ScheduledCourseForm
-from pendle.utils import add
+from pendle.fines.models import Fine, FinePayment
+from pendle.utils import add, format_dollars
 from pendle.utils.html import changelist_link
 from pendle.utils.admin import related_list, count_link
 
@@ -23,9 +24,32 @@ class ProfileInline(admin.StackedInline):
                            ('year', 'graduation_date'), 'staff_notes',
                            'picture', 'signed_agreement')})]
 
+class FineInline(admin.TabularInline):
+    model = Fine
+    fk_name = 'customer'
+    readonly_fields = ['date_issued']
+    extra = 0
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'staff_member':
+            kwargs['initial'] = request.user
+        return super(FineInline, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
+
+class FinePaymentInline(admin.TabularInline):
+    model = FinePayment
+    fk_name = 'customer'
+    readonly_fields = ['date_received']
+    extra = 0
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'staff_member':
+            kwargs['initial'] = request.user
+        return super(FinePaymentInline, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
 
 class PendleUserAdmin(UserAdmin):
-    inlines = list(UserAdmin.inlines) + [ProfileInline]
+    inlines = [ProfileInline, FineInline, FinePaymentInline]
     ordering = ['last_name', 'first_name', 'username']
     list_display = ['username', 'first_name', 'last_name']
     list_display_links = ['username']
@@ -47,6 +71,17 @@ class PendleUserAdmin(UserAdmin):
                                   admin_order_field='departments__name'),
                      related_list(User, 'groups',
                                   admin_order_field='groups__name')]
+
+    @add(list_display, "fines", allow_tags=True)
+    def list_fines(self, user):
+        amount_issued = sum(fine.amount for fine in user.fines.all())
+        amount_paid = sum(payment.amount for payment in user.fine_payments.all())
+        amount_due = amount_issued - amount_paid
+        classes = ['fine']
+        if amount_due > 0:
+            classes.append('due')
+        return '<p class="%s">%s<p>' % (' '.join(classes),
+                                        format_dollars(amount_due))
 
 
 class PendleGroupAdmin(GroupAdmin):
