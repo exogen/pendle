@@ -1,0 +1,100 @@
+.list-inline .search{
+    background: #fff url('../../admin/img/admin/nav-bg.gif') repeat-x 0% 100%;
+    color: #666;
+    padding: 4px 8px;
+}
+
+.list-inline .search input.search {
+    background: #fff;
+    padding-left: 5px !important;
+    padding-right: 5px !important;
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+}
+
+.list-inline .search h3 {
+    font-size: 11px;
+    background: transparent;
+    color: #333;
+    border: 0;
+    margin: 0 0 4px 0;
+    padding: 0;
+}
+
+.list-inline .search label img {
+    vertical-align: middle;
+}
+
+.list-inline li.inline-related {
+    font-size: 12px;
+    list-style-type: none;
+    background: #fcfcfa;
+    color: #666;
+    margin: 2px;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    overflow: auto;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+}
+
+.list-inline ul {
+    margin: 0;
+    padding: 0;
+}
+
+.list-inline li.inline-related h3 {
+    float: left;
+    font-size: 12px;
+    line-height: 20px;
+    background: transparent;
+    border: 0;
+    margin: 0;
+    padding: 0;
+}
+/*
+.list-inline li.inline-related h3 a {
+    width: 13px;
+    height: 13px;
+    background: url('../images/link.png') no-repeat 0% 50%;
+    margin-left: 3px;
+    padding-left: 18px;
+    opacity: 0.5;
+    font-weight: normal;
+}
+
+.list-inline li.inline-related h3 a:hover {
+    opacity: 1.0 !important;
+}
+*/
+.list-inline li.inline-related .manage-field {
+    float: right;
+    line-height: 20px;
+    margin-left: 20px;
+}
+
+.list-inline li.inline-related .manage-field label {
+    font-size: 10px;
+}
+
+.list-inline li.inline-related fieldset {
+    background: transparent;
+}
+
+.list-inline li.inline-related fieldset .field {
+    float: left;
+    margin-left: 20px;
+}
+
+.list-inline li.inline-related fieldset .field p,
+.list-inline li.inline-related fieldset .field label {
+    line-height: 20px;
+}
+
+.list-inline li.inline-related fieldset .field p,
+.list-inline li.inline-related fieldset .field input,
+.list-inline li.inline-related fieldset .field textarea,
+.list-inline li.inline-related fieldset .field select {
+    margin-top: 0;
+    margin-bottom: 2px;
+}

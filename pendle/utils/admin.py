@@ -2,19 +2,21 @@ from django.utils.encoding import force_unicode
 from django.utils.formats import number_format
 
 from pendle.utils.html import change_link, changelist_link
+from pendle.utils.text import truncate
 
 
-def value_or_empty(model, attr):
+def field_value(model, attr, default="", max_length=None):
     field, model_, direct, m2m = model._meta.get_field_by_name(attr)
     def column(obj):
         value = getattr(obj, attr)
         if value is not None:
-            return force_unicode(value)
+            return truncate(value, max_length)
         else:
-            return ""
+            return default
     column.short_description = force_unicode(field.verbose_name)
     column.admin_order_field = attr
     return column
+
 
 def related_list(model, attr, short_description=None, **kwargs):
     field, model_, direct, m2m = model._meta.get_field_by_name(attr)

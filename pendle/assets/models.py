@@ -4,6 +4,7 @@ from django.db import models
 
 from pendle.catalog.models import (FinePolicy, ReservationDuration,
                                    Requirements, Catalog)
+from pendle.utils.text import truncate
 
 
 class ProductType(models.Model):
@@ -75,7 +76,7 @@ class Product(models.Model):
         ordering = ['manufacturer', 'title']
     
     def __unicode__(self):
-        return self.title
+        return truncate(self.title, 75)
 
 
 class Asset(models.Model):
@@ -85,14 +86,15 @@ class Asset(models.Model):
                          ('unreliable', "Unreliable"),
                          ('needs_service', "Needs service"),
                          ('destroyed', "Destroyed"))
-    catalog = models.ForeignKey(Catalog, related_name='assets')
+    catalog = models.ForeignKey(Catalog, related_name='assets', default=1)
     product = models.ForeignKey(Product, related_name='assets')
     bundle = models.ForeignKey('self', null=True, blank=True,
         related_name='bundle_assets',
         help_text="The bundle in which this asset is included.")
     bundle_order = models.IntegerField(blank=True, null=True)
     barcode = models.CharField(max_length=75)
-    new_barcode = models.BooleanField("needs new barcode printed", default=True)
+    new_barcode = models.BooleanField("needs new barcode printed",
+                                      default=True)
     condition = models.CharField(max_length=30, choices=CONDITION_CHOICES,
         default='like_new',
         help_text="Select the closest description of the asset's condition.")
@@ -136,4 +138,8 @@ class Asset(models.Model):
 
     def __unicode__(self):
         return self.barcode
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('admin:assets_asset_change', [self.id])
 

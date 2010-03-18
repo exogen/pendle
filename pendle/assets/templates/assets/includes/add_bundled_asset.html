@@ -1,0 +1,8 @@
+{% load adminmedia %}
+<h3>Find more {{ opts.verbose_name_plural }} to bundle&hellip;</h3>
+<div class="field">
+  <label for="{{ search_form.query.auto_id }}">
+    <img src="{% admin_media_prefix %}img/admin/icon_searchbox.png" alt="Search">
+  </label>
+  {{ search_form.query }}
+</div>

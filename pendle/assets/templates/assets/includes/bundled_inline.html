@@ -1,0 +1,46 @@
+{% load i18n adminmedia %}
+<div class="inline-group" id="{{ inline_admin_formset.formset.prefix }}-group">
+  <div class="inline-related {% if forloop.last %}last-related{% endif %}">
+  {{ inline_admin_formset.formset.management_form }}
+    <fieldset>
+      <h2>{{ inline_admin_formset.opts.verbose_name_plural|capfirst }}</h2>
+      {{ inline_admin_formset.formset.non_form_errors }}
+      {% for inline_admin_form in inline_admin_formset %}
+        {% if not forloop.last %}
+        <div id="{{ inline_admin_formset.formset.prefix }}{{ forloop.counter }}" class="row">
+          {% if inline_admin_form.form.non_field_errors %}
+            {{ inline_admin_form.form.non_field_errors }}
+          {% endif %}
+          {% if inline_admin_form.show_url %}
+          <a class="related" title="Go to {{ inline_admin_formset.opts.verbose_name }}"
+             href="{{ inline_admin_form.original.get_absolute_url }}">
+            <img src="{{ MEDIA_URL }}images/link.png" width="13" height="13" alt="arrow"/>
+          </a>
+          {% endif %}
+          <span class="remove">{{ inline_admin_form.form.remove }}
+                               {{ inline_admin_form.form.remove.label_tag }}</span>
+          <span class="asset">
+            {{ inline_admin_form.original }}
+          </span>
+          {% if inline_admin_form.has_auto_field %}{{ inline_admin_form.pk_field.field }}{% endif %}
+          {{ inline_admin_form.fk_field.field }}
+          {% spaceless %}
+          {% for fieldset in inline_admin_form %}
+            {% for line in fieldset %}
+              {% for field in line %}
+                {% if field.is_hidden %}{{ field.field }}{% endif %}
+              {% endfor %}
+            {% endfor %}
+          {% endfor %}
+          {% endspaceless %}
+          <span class="product">Product...</span>
+        </div>
+        {% endif %}
+      {% endfor %}
+      {% with inline_admin_formset.formset.search_form as search_form %}
+      <div class="search-row">{% include "assets/includes/add_bundled_asset.html" %}</div>
+      {% endwith %}
+    </fieldset>
+  </div>
+</div>
+

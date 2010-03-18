@@ -1,14 +1,17 @@
 from django.contrib import admin
-from django.contrib.admin.templatetags.admin_list import _boolean_icon
+from django.contrib.admin.options import InlineModelAdmin
+from django import forms
 from django.utils.encoding import force_unicode
 from django.utils.formats import number_format
+
+from listinline import ListInline
 
 from pendle.assets.models import (ProductType, PolicyCategory, Manufacturer,
                                   Product, Asset)
 from pendle.utils import add
 from pendle.utils.urls import admin_url
 from pendle.utils.html import hyperlink, change_link, changelist_link
-from pendle.utils.admin import value_or_empty, related_link, count_link
+from pendle.utils.admin import field_value, related_link, count_link
 from pendle.utils.text import truncate
 
 
@@ -30,9 +33,9 @@ class ProductTypeAdmin(admin.ModelAdmin):
 
 class PolicyCategoryAdmin(admin.ModelAdmin):
     list_display = ['__unicode__',
-                    value_or_empty(PolicyCategory, 'fine_policy'),
-                    value_or_empty(PolicyCategory, 'reservation_duration'),
-                    value_or_empty(PolicyCategory, 'requirements'),
+                    field_value(PolicyCategory, 'fine_policy'),
+                    field_value(PolicyCategory, 'reservation_duration'),
+                    field_value(PolicyCategory, 'requirements'),
                     count_link(PolicyCategory, 'assets')]
 
 
@@ -50,7 +53,7 @@ class ManufacturerAdmin(admin.ModelAdmin):
         else:
             return ""
 
-    add(list_display)(value_or_empty(Manufacturer, 'phone_number'))
+    add(list_display)(field_value(Manufacturer, 'phone_number'))
     add(list_display)(count_link(Manufacturer, 'products'))
 
     @add(list_display, "assets", allow_tags=True)
@@ -67,10 +70,17 @@ class ManufacturerAdmin(admin.ModelAdmin):
             return ""
 
 
+class AssetInline(admin.TabularInline):
+    model = Asset
+    fields = ['barcode', 'condition', 'purchase_date', 'catalog']
+    extra = 0
+
+
 class ProductAdmin(admin.ModelAdmin):
+    inlines = [AssetInline]
     list_display = [related_link(Product, 'manufacturer'),
                     related_link(Product, 'product_type'), 'model_name',
-                    value_or_empty(Product, 'model_year'),
+                    field_value(Product, 'model_year'),
                     count_link(Product, 'assets')]
     list_filter = ['date_added', 'product_type']
     search_fields = ['title', 'manufacturer__name', 'description',
@@ -81,11 +91,23 @@ class ProductAdmin(admin.ModelAdmin):
                                     ('model_name', 'model_year')]})]
     
     @add(list_display, "product", 0, allow_tags=True)
-    def list_name(self, product):
+    def list_product(self, product):
         return truncate(product, 60)
 
 
+class BundledInline(ListInline):
+    model = Asset
+    fields = ['product', 'bundle_order']
+    readonly_fields = ['product']
+    ordering = ['bundle_order']
+    verbose_name = "asset"
+    verbose_name_plural = "bundled assets"
+    can_remove = True
+    extra = 0
+
+
 class AssetAdmin(admin.ModelAdmin):
+    inlines = [BundledInline]
     list_display = ['barcode', related_link(Asset, 'product')]
     list_filter = ['catalog', 'date_added', 'policy_category', 'condition',
                    'new_barcode']
@@ -97,7 +119,8 @@ class AssetAdmin(admin.ModelAdmin):
     save_as = True
     save_on_top = True
     fieldsets = [
-        (None, {'fields': ('catalog', 'product', ('barcode', 'new_barcode'), 'bundle')}),
+        (None, {'fields': ('catalog', 'product', ('barcode', 'new_barcode'),
+                           'bundle')}),
         ("Status", {'fields': ('condition', 'condition_details',
                                'staff_notes')}),
         ("Details", {'fields': ('serial_number', 'color')}),
@@ -109,7 +132,6 @@ class AssetAdmin(admin.ModelAdmin):
             'classes': ('collapse', 'wide'),
             'fields': ('policy_category', 'reservation_duration',
                        'fine_policy', 'requirements', 'reservable')})]
-    product_text_length = 75
 
     @add(list_display, "bundle", allow_tags=True,
          admin_order_field='bundle__barcode')
