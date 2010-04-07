@@ -14,7 +14,7 @@ def generate_transaction_key(request):
     return hashlib.new('sha1', session_key + timestamp).hexdigest()
 
 def scan(request):
-    customer_form = ScanCustomerForm()
+    customer_form = ScanCustomerForm(auto_id='customer_%s')
     catalog = Catalog.objects.get_or_default()
     transaction_key = generate_transaction_key(request)
     return render_to_response("reservations/scan.html", {

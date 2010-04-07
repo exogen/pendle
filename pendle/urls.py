@@ -8,9 +8,12 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^admin/', include('pendle.assets.urls', namespace='assets', 
-                            app_name='assets')),
-    url(r'^admin/', include('pendle.reservations.urls', namespace='reservations', 
+    url(r'^admin/', include('pendle.institution.urls',
+                            namespace='institution', app_name='institution')),
+    url(r'^admin/', include('pendle.assets.urls',
+                            namespace='assets', app_name='assets')),
+    url(r'^admin/', include('pendle.reservations.urls',
+                            namespace='reservations',
                             app_name='reservations')),
     url(r'^admin/', include(admin.site.urls)),
 )

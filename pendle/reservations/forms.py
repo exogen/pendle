@@ -14,6 +14,9 @@ class ScanCustomerForm(forms.ModelForm):
         model = Transaction
         fields = ['customer']
 
+    class Media:
+        js = ('js/scan.js',)
+
     query = forms.CharField(label="ID number",
         help_text="Enter the user's ID number or username")
     customer = forms.ModelChoiceField(queryset=User.objects.all(),
