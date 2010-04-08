@@ -120,4 +120,12 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         profile, created = Profile.objects.get_or_create(user=instance)
 
+def find_user(query):
+    try:
+        user = User.objects.get(username=query)
+    except User.DoesNotExist:
+        user = User.objects.get(profile__id_number=query)
+    return user
+
 signals.post_save.connect(create_profile, sender=User, dispatch_uid=UID)
+
