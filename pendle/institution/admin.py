@@ -7,7 +7,8 @@ from pendle.institution.models import (Profile, Department, Course,
                                        ScheduledCourse)
 from pendle.institution.forms import ScheduledCourseForm
 from pendle.fines.models import Fine, FinePayment
-from pendle.utils import add, format_dollars
+from pendle.utils import add
+from pendle.utils.text import format_dollars
 from pendle.utils.html import changelist_link
 from pendle.utils.admin import related_list, count_link
 

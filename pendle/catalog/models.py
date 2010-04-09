@@ -5,7 +5,7 @@ from django.conf import settings
 from django.utils.translation import ungettext as _n
 
 from pendle.institution.models import Department, Course, Training
-from pendle.utils import format_dollars
+from pendle.utils.text import format_dollars
 from pendle.utils.html import hyperlink
 
 

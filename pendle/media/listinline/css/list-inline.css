@@ -1,10 +1,10 @@
-.list-inline .search{
+.list-inline .add {
     background: #fff url('../../admin/img/admin/nav-bg.gif') repeat-x 0% 100%;
     color: #666;
     padding: 4px 8px;
 }
 
-.list-inline .search input.search {
+.list-inline .add input.search {
     background: #fff;
     padding-left: 5px !important;
     padding-right: 5px !important;
@@ -12,7 +12,7 @@
     -webkit-border-radius: 10px;
 }
 
-.list-inline .search h3 {
+.list-inline .add h3 {
     font-size: 11px;
     background: transparent;
     color: #333;
@@ -21,7 +21,7 @@
     padding: 0;
 }
 
-.list-inline .search label img {
+.list-inline .add label img {
     vertical-align: middle;
 }
 

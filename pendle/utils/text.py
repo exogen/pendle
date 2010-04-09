@@ -8,3 +8,7 @@ def truncate(text, max_length, tail=u'…'):
         text = text[:max_length] + tail
     return text
 
+def format_dollars(n):
+    return "%s$%0.*f" % ('-' if n < 0 else '',
+                         0 if int(n) == n else 2, abs(n))
+

@@ -22,6 +22,10 @@ class Transaction(models.Model):
         return u"Transaction #%d" % self.id
 
 
+class ReservationManager(models.Manager):
+    pass
+
+
 class Reservation(models.Model):
     asset = models.ForeignKey(Asset, related_name='reservations')
     transaction_out = models.ForeignKey(Transaction,
@@ -39,3 +43,4 @@ class Reservation(models.Model):
 
     def __unicode__(self):
         return u"%s in %s" % (self.asset, self.transaction_out)
+

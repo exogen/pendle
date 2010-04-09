@@ -7,6 +7,7 @@ from django.utils.formats import number_format
 from pendle.reservations.models import Transaction, Reservation
 from pendle.reservations.forms import TransactionForm
 from pendle.assets.models import Asset
+from pendle.catalog.models import Catalog
 from pendle.utils import add
 from pendle.utils.html import change_link, changelist_link
 from pendle.utils.admin import related_link, count_link
@@ -28,7 +29,7 @@ class CheckoutInline(CheckinInline):
 
 
 class TransactionAdmin(admin.ModelAdmin):
-    form = TransactionForm
+    #form = TransactionForm
     inlines = [CheckoutInline]
     list_display = ['__unicode__',
                     related_link(Transaction, 'customer',
@@ -40,9 +41,9 @@ class TransactionAdmin(admin.ModelAdmin):
     date_hierarchy = 'timestamp'
     search_fields = ['customer__username', 'customer__first_name',
                      'customer__last_name']
-    readonly_fields = ['timestamp']
+    readonly_fields = ['staff_member', 'timestamp']
     fieldsets = [
-        (None, {'fields': ['catalog', 'staff_member', 'customer',
+        (None, {'fields': ['catalog', 'customer', 'staff_member',
                            'timestamp']}),
         ("Notes", {'fields': ['staff_notes'], 'classes': ['collapse']})]
 
@@ -71,6 +72,24 @@ class TransactionAdmin(admin.ModelAdmin):
                                                    number_format(asset_count))
         else:
             return ""
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'catalog':
+            kwargs['initial'] = Catalog.objects.get_or_default()
+        return super(TransactionAdmin, self).formfield_for_foreignkey(
+            db_field, request, **kwargs)
+
+    def render_change_form(self, request, context, add=False, *args, **kwargs):
+        if add:
+            context['adminform'].form.instance.staff_member = request.user
+        return super(TransactionAdmin, self).render_change_form(
+            request, context, add, *args, **kwargs)
+
+    def save_model(self, request, obj, form, change):
+        if not change:
+            obj.staff_member = request.user
+        obj.save()
+
 
 class ReservationAdmin(admin.ModelAdmin):
     list_display = ['asset', related_link(Reservation, 'transaction_out'),

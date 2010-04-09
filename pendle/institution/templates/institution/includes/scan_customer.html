@@ -1,1 +1,15 @@
-<div>{{ customer }}</div>
+{% load textutils %}
+<div id="customer">
+  <div class="header">
+    <h3>{{ customer.get_full_name|default:customer.username }}</h3>
+    {% if customer.departments.count %}<h4>{{ customer.departments.all|join:"," }}</h4>{% endif %}
+  </div>
+  <div class="details">
+    <h5>Assets</h5>
+    <p class="assets">None</p>
+    <h5>Fines</h5>
+    <p class="fines">{{ fines|dollars }}</p>
+    <h5>Notes</h5>
+    <p class="notes">None</p>
+  </div>
+</div>

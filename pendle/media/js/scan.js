@@ -1,4 +1,5 @@
 jQuery(function($) {
+    var CUSTOMER_CONTAINER = $('#scan-customer');
     var CUSTOMER_FORM = $('#customer-form');
     var CUSTOMER_QUERY = $('#customer_query').focus();
 
@@ -28,7 +29,8 @@ jQuery(function($) {
     }).bind('receive', function(e, response) {
         var form = $(this);
         if (response.html) {
-            var html = $(response.html).appendTo(form);
+            form.find('p.help').hide();
+            var html = $(response.html).hide().appendTo(CUSTOMER_CONTAINER).slideDown('fast');
         }
     });
 });

@@ -5,10 +5,6 @@ from datetime import datetime
 def current_year():
     return datetime.now().year
 
-def format_dollars(n):
-    return "%s$%0.*f" % ('-' if n < 0 else '',
-                         0 if int(n) == n else 2, abs(n))
-
 def add(list_, short_description=None, position=None, **kwargs):
     """
     A helper to add a method to `list_` (usually `ModelAdmin.list_display`),
