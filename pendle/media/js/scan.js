@@ -149,6 +149,7 @@ jQuery(function($) {
             }
             if (response.html) {
                 this.options.content = $(response.html).hide().appendTo(this.element).slideDown('fast');
+                this._trigger('ready', null, {response: response});
             }
         },
         reset: function(clear) {
@@ -159,6 +160,9 @@ jQuery(function($) {
                 this.options.content.slideUp('fast');
             }
         },
+        focus: function() {
+            this.options.input.focus().select();
+        },
         options: {
             input: 'input.query',
             form: 'form',
@@ -168,64 +172,10 @@ jQuery(function($) {
     };
     $.widget('ui.scanner', Scanner);
 
-    $('#scan-customer').scanner().scanner('option', 'input').focus();
+    $('#scan-customer').scanner({
+        ready: function() {
+            $('#scan-asset').scanner('focus');
+        }
+    }).scanner('option', 'input').focus();
     $('#scan-asset').scanner();
-
-    var reset_form = function(e, erase) {
-        var form = $(this);
-        if (erase) {
-            form.reset();
-        }
-        var element = form.data('element');
-        if (element) {
-            element.slideUp('fast', function() {
-                $(this).remove();
-                form.removeData('element');
-            });
-        }
-    };
-    var send_query = function(e, force) {
-        var form = $(this);
-        var input = form.data('input');
-        var query = $.trim(input.val());
-        if (force || query != form.data('query')) {
-            form.data('query', query);
-            var request = form.data('request');
-            if (request) {
-                request.abort();
-                form.trigger('clear', [false]);
-            }
-            if (query) {
-                $.ajax({
-                    beforeSend: function(request) {
-                        this.data('request', request);
-                    },
-                    cache: false,
-                    context: form,
-                    data: form.serializeArray(),
-                    dataType: 'json',
-                    success: function(response, status) {
-                        if (response) {
-                            this.trigger('receive', [response]);
-                        }
-                    },
-                    timeout: 15000,
-                    type: form.attr('method'),
-                    url: form.attr('action')
-                });
-            }
-        }
-    };
-    var receive_response = function(e, response) {
-    };
-    var customer_ready = function(e, response) {
-        ASSET_FORM.data('input').focus();
-    };
-    var asset_ready = function(e, response) {
-        ASSET_FORM.data('input').focus().select();
-    };
-    var select_text = function(e) {
-        $(this).select();
-    };
-
 });
