@@ -1,0 +1,28 @@
+{% load textutils %}
+<div>
+  <h3>
+    Browse assets
+    {% if query %}
+    <span class="query">matching &#147;{{ query }}&#148;</span>
+    <a href="javascript:void(0)" class="all">Browse all</a>
+    {% endif %}
+  </h3>
+  <div id="assets">
+    <table>
+      {% if not assets %}
+      <caption align="bottom">No assets found.</caption>
+      {% endif %}
+      <thead>
+        <tr><th>Barcode</th><th>Product</th></tr>
+      </thead>
+      <tbody>
+        {% for asset in assets %}
+        <tr>
+          <td class="barcode">{{ asset.barcode }}</td>
+          <td class="product">{{ asset.product|truncate:60 }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -4,6 +4,7 @@ jQuery(function($) {
             this.options.button = $(this.options.button);
             this.options.button.bind('click.drawer', {drawer: this}, function(e) {
                 e.data.drawer.toggle();
+                e.data.drawer._trigger('click');
             });
         },
         open: function() {
@@ -30,7 +31,33 @@ jQuery(function($) {
                 this.open();
             }
         },
+        load: function(url, data) {
+            $.ajax({
+                beforeSend: function(request) {
+                    if (this.options.request) {
+                        this.options.request.abort();
+                    }
+                    this.options.request = request;
+                    if (this.options.content) {
+                        this.options.content.remove();
+                    }
+                    this.element.addClass('loading');
+                },
+                cache: false,
+                context: this,
+                data: data,
+                dataType: 'html',
+                success: function(response, status) {
+                    this.element.stop(true, true).removeClass('loading');
+                    this.options.content = $(response).hide().appendTo(this.element).slideDown('fast');
+                },
+                timeout: 15000,
+                type: 'GET',
+                url: url
+            });
+        },
         options: {
+            content: null,
             isOpen: false
         }
     };
@@ -47,47 +74,21 @@ jQuery(function($) {
                 scanner.scan(query, true);
                 return false;
             });
-            this.options.input.change(function(e) {
+            this.options.input.blur(function(e) {
                 var query = $(this).val();
                 scanner.scan(query, false);
             });
             this.options.browser.drawer({
                 button: this.options.button,
+                click: function() {
+                    scanner.focus();
+                },
                 open: function() {
                     var browser = $(this);
-                    scanner.options.input.focus().select();
-                    scanner.reset(false);
                     browser.drawer('option', 'button').addClass('open');
-                    var content = browser.data('content');
-                    if (!content) {
-                        browser.addClass('loading');
-                        $.ajax({
-                            beforeSend: function(request) {
-                                this.data('request', request);
-                            },
-                            cache: false,
-                            complete: function(response, status) {
-                                this.removeClass('loading');
-                            },
-                            context: browser,
-                            data: scanner.options.form.serializeArray(),
-                            dataType: 'html',
-                            success: function(response, status) {
-                                var content = this.data('content');
-                                if (content) {
-                                    content.remove();
-                                }
-                                content = $(response).hide().appendTo(this).slideDown('fast');
-                                this.data('content', content);
-                            },
-                            timeout: 15000,
-                            type: 'GET',
-                            url: scanner.options.form.attr('action') + '/browse'
-                        });
-                    }
+                    scanner.browse();
                 },
-                close: function() {
-                    scanner.options.input.focus().select();
+                close: function(focus) {
                     if (scanner.options.content) {
                         scanner.options.content.slideDown('fast');
                     }
@@ -100,10 +101,15 @@ jQuery(function($) {
                 }
             });
             $('td', this.options.browser).live('click', function(e) {
-                var value = $(this).closest('tr').find('td.username').text();
+                var value = $(this).closest('tr').find('td:first').text();
+                scanner.reset(false);
                 scanner.options.input.val(value);
                 scanner.options.browser.drawer('close');
-                scanner.options.input.change();
+                scanner.options.form.submit();
+            });
+            $('a.all', this.options.browser).live('click', function(e) {
+                scanner.reset(true).focus();
+                scanner.options.form.submit();
             });
         },
         scan: function(query, force) {
@@ -113,16 +119,18 @@ jQuery(function($) {
                 this.options.query = query;
                 this.send(query);
             }
+            return this;
         },
         send: function(query) {
-            if (this.options.request) {
-                this.options.request.abort();
-                this.reset(false);
-            }
-            if (query) {
-                if (!this.options.browser.drawer('option', 'isOpen')) {
+            this.focus();
+            if (!this.options.browser.drawer('option', 'isOpen')) {
+                this.reset(false, !query);
+                if (query) {
                     $.ajax({
                         beforeSend: function(request) {
+                            if (this.options.request) {
+                                this.options.request.abort();
+                            }
                             this.options.request = request;
                         },
                         cache: false,
@@ -137,10 +145,12 @@ jQuery(function($) {
                         url: this.options.form.attr('action')
                     });
                 }
-                else {
-                }
+            }
+            else {
+                this.browse();
             }
             this._trigger('send', null, {query: query});
+            return this;
         },
         receive: function(response) {
             this._trigger('receive', null, {response: response});
@@ -148,20 +158,45 @@ jQuery(function($) {
                 this.options.content.remove();
             }
             if (response.html) {
-                this.options.content = $(response.html).hide().appendTo(this.element).slideDown('fast');
+                this.options.content = $(response.html).hide().appendTo(this.element);
+                if (!this.options.browser.drawer('option', 'isOpen')) {
+                    this.options.content.slideDown('fast');
+                }
                 this._trigger('ready', null, {response: response});
             }
+            return this;
         },
-        reset: function(clear) {
+        reset: function(clear, animate) {
+            animate = (typeof animate == 'undefined') ? true : animate;
             if (clear) {
                 this.options.input.val("");
             }
             if (this.options.content) {
-                this.options.content.slideUp('fast');
+                var speed = animate ? 'fast' : 0;
+                this.options.content.slideUp(speed, function(e) {
+                    $(this).remove();
+                });
             }
+            return this;
         },
         focus: function() {
             this.options.input.focus().select();
+            return this;
+        },
+        browse: function() {
+            var browser = this.options.browser;
+            var form = this.options.form;
+            var query = this.options.query;
+            if (this.options.content) {
+                this.options.content.slideUp('fast');
+            }
+            if (!browser.drawer('option', 'content') || browser.data('query') != query) {
+                browser.data('query', query);
+                var url = form.attr('action') + '/browse';
+                var data = form.serializeArray();
+                browser.drawer('load', url, data);
+            }
+            this._trigger('browse');
         },
         options: {
             input: 'input.query',
@@ -175,7 +210,14 @@ jQuery(function($) {
     $('#scan-customer').scanner({
         ready: function() {
             $('#scan-asset').scanner('focus');
+        },
+        browse: function() {
+            $('#scan-asset').scanner('option', 'browser').drawer('close', false);
         }
-    }).scanner('option', 'input').focus();
-    $('#scan-asset').scanner();
+    }).scanner('focus');
+    $('#scan-asset').scanner({
+        browse: function() {
+            $('#scan-customer').scanner('option', 'browser').drawer('close', false);
+        }
+    });
 });

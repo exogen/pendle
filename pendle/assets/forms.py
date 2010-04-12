@@ -29,8 +29,8 @@ class ScanAssetForm(forms.Form):
             try:
                 asset = catalog.assets.get(barcode__iexact=query)
             except Asset.DoesNotExist:
-                raise ValidationError("No asset with this barcode was found "
-                                      "in the selected catalog.")
+                raise forms.ValidationError("No asset with this barcode was "
+                                            "found in the selected catalog.")
         self.cleaned_data['asset'] = asset
         return self.cleaned_data
 

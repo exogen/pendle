@@ -5,6 +5,7 @@ from django.template.loader import render_to_string
 from pendle.assets.models import Asset
 from pendle.assets.forms import ScanAssetForm
 from pendle.utils.views import JsonResponse
+from pendle.utils.models import search_query
 
 
 def add_bundled_asset(request):
@@ -24,4 +25,15 @@ def scan_asset(request, transaction_key):
     return JsonResponse({
         'html': render_to_string("assets/includes/scan_asset.html",
             context, context_instance=RequestContext(request))})
+
+def browse_assets(request, transaction_key):
+    query_str = request.GET.get('query', "").strip()
+    if query_str:
+        query = search_query(query_str, ['barcode', 'product__title',
+                                         'product__manufacturer__name'])
+        assets = Asset.objects.filter(query)
+    else:
+        assets = Asset.objects.all()[:15]
+    return render_to_response("assets/includes/browse_assets.html",
+        {'assets': assets, 'query': query_str})
 

@@ -12,14 +12,14 @@
       <caption align="bottom">No users found.</caption>
       {% endif %}
       <thead>
-        <tr><th>Name</th><th>Username</th><th>ID number</th></tr>
+        <tr><th>Username</th><th>Name</th><th>ID number</th></tr>
       </thead>
       <tbody>
         {% for customer in customers %}
         {% with customer.get_profile as profile %}
         <tr>
-          <td class="name">{{ customer.get_full_name|default:customer.username }}</td>
           <td class="username">{{ customer.username }}</td>
+          <td class="name">{{ customer.get_full_name|default:customer.username }}</td>
           <td class="number">{{ profile.id_number|default:"" }}</td>
         </tr>
         {% endwith %}

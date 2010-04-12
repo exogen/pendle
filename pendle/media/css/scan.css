@@ -162,6 +162,7 @@ div.browse.loading {
 
 div.browse h3 {
     font-size: 12px;
+    line-height: 2;
     margin-top: 0;
     margin-bottom: 0.5em;
     text-shadow: #fff 1px 1px 0;
@@ -202,7 +203,8 @@ div.browse caption {
     padding: 5px;
 }
 
-#customers {
+#customers,
+#assets {
     max-height: 283px;
     overflow: auto;
 }
