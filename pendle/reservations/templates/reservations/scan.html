@@ -7,32 +7,52 @@
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript" src="{% admin_media_prefix %}js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/scan.js"></script>
 {% endblock %}
 
-
-{% block bodyclass %}scan{% endblock %}
-
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-  <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo; Scan
+  <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo; New transaction
 </div>
 {% endblock %}
 
 {% block content %}
 
-<h2 class="catalog">{{ catalog }}</h2>
+<p class="help catalog">{{ catalog }}</p>
 
-<div id="scan-customer">
+<div id="scan-customer" class="scan">
+  <h2>Customer</h2>
   <form id="customer-form" method="POST" action="{% url institution:scan-customer transaction_key %}">
-    <h2>Customer</h2>
+    <p class="help">{{ customer_form.query.help_text }}</p>
+    {% spaceless %}
     <div>
-      {{ customer_form.query.label_tag }} {{ customer_form.query }}
-      <p class="help">{{ customer_form.query.help_text }}</p>
-      {{ customer_form.customer }}
+      {{ customer_form.query }}
+      <button id="customer-browse" class="browse" type="button" title="Browse users"></button>
     </div>
     {% csrf_token %}
+    {% endspaceless %}
   </form>
+  <div id="customer-browser" class="browse"></div>
+</div>
+<div id="scan-asset" class="scan">
+  <h2>Add asset</h2>
+  <form id="asset-form" method="POST" action="{% url assets:scan-asset transaction_key %}">
+    <p class="help">{{ asset_form.query.help_text }}</p>
+    {% spaceless %}
+    <div>
+      {{ asset_form.catalog }}
+      {{ asset_form.query }}
+      <button id="asset-browse" class="browse" type="button" title="Browse assets"></button>
+    </div>
+    {% csrf_token %}
+    {% endspaceless %}
+  </form>
+  <div id="asset-browser" class="browse"></div>
+</div>
+<div id="transaction">
+  <h2>Transaction summary</h2>
+  <p class="help">Scan items to add them to this transaction.</p>
 </div>
 
 {% endblock %}

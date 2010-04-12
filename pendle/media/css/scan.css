@@ -1,51 +1,61 @@
-#content h2.catalog {
-    font-size: 11px;
-    font-weight: normal;
-    color: #999;
+#content h1 {
+    margin-bottom: 0;
 }
 
-#scan-customer {
+#content h2 {
+    margin: 0;
+}
+
+#content p.catalog {
+    margin-bottom: 15px;
+}
+
+.scan {
     float: left;
+    clear: left;
+    margin: 0 30px 15px 15px;
 }
 
-#customer-form label {
+.scan form label {
     float: left;
     width: 90px;
     line-height: 2;
     color: #666;
 }
 
-#customer-form p.help {
-    margin-left: 90px;
-}
-
-#customer_query {
+input.query {
+    position: relative;
     font-size: 12px;
     line-height: 1.5;
+    width: 500px;
     margin-top: 0;
-    width: 36em;
+    z-index: 100;
 }
 
-#customer_query:focus {
+input.query:focus {
     background-color: #ffc;
 }
 
-#customer {
-    margin: 2px 0 4px 90px;
+.result {
+    position: relative;
+    width: 508px;
+    margin: 0 0 4px 0;
+    z-index: 90;
 }
 
-#customer .header {
-    background: #3c7890;
+.result .header {
+    background: #417690;
     padding: 6px;
 }
 
-#customer h3 {
+.result h3 {
+    font-weight: normal;
     margin: 0;
     padding: 0;
     color: #fff;
 }
 
-#customer h4 {
+.result h4 {
     font-size: 10px;
     font-weight: normal;
     margin: 0;
@@ -53,8 +63,9 @@
     color: #cdd;
 }
 
-#customer .details {
-    background: #ecf2ff;
+.result dl.details {
+    background: #eef8ff;
+    margin: 0;
     padding: 5px 10px;
     border-left: 1px solid #ccc;
     border-right: 1px solid #ccc;
@@ -67,7 +78,7 @@
     border-bottom-left-radius: 10px;
 }
 
-#customer .details h5 {
+.result dl.details dt {
     float: left;
     width: 75px;
     font-size: 11px;
@@ -75,9 +86,15 @@
     line-height: 2;
     margin: 0 0 0 2px;
     color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
-#customer .details p {
+#asset.result dl.details dt {
+    width: 100px;
+}
+
+.result dl.details dd {
     font-size: 11px;
     line-height: 2;
     margin: 0;
@@ -85,6 +102,107 @@
     border-bottom: 1px solid #dde;
 }
 
-#customer .details p:last-child {
+.result dl.details dd:last-child {
     border-bottom: 0;
+}
+
+#transaction {
+    margin-bottom: 15px;
+}
+
+button.browse {
+    position: relative;
+    width: 30px;
+    height: 24px;
+    vertical-align: top;
+    padding: 0;
+    margin: 0 0 0 2px;
+    background: #eee url('../images/browse-menu.png') no-repeat 1px 5px;
+    border: 1px solid #ccc;
+    -webkit-border-top-right-radius: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    -moz-border-radius-topright: 5px;
+    -moz-border-radius-bottomright: 5px;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    z-index: 100;
+}
+
+button.browse.open {
+    height: 27px;
+    border-bottom: 0;
+    -webkit-border-bottom-right-radius: 0;
+    -moz-border-radius-bottomright: 0;
+    border-bottom-right-radius: 0;
+}
+
+div.browse {
+    display: none;
+    position: relative;
+    top: -1px;
+    border: 1px solid #ccc;
+    padding: 6px;
+    background: #eee;
+    z-index: 90;
+    -webkit-border-bottom-right-radius: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -moz-border-radius-bottomleft: 5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+div.browse.loading {
+    height: 32px;
+    background-image: url('../images/browse-loading.gif');
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+}
+
+
+div.browse h3 {
+    font-size: 12px;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    text-shadow: #fff 1px 1px 0;
+}
+
+div.browse h3 a.all {
+    font-size: 11px;
+    line-height: 1;
+    font-weight: normal;
+    margin-left: 0.5em;
+    text-shadow: none;
+}
+
+div.browse table {
+    width: 100%;
+}
+
+div.browse th {
+    background: transparent;
+    color: #999;
+    border-top: 1px solid #ddd;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #ddd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+div.browse tbody tr:hover td {
+    cursor: pointer;
+    background: #417690;
+    color: #fff;
+}
+
+div.browse caption {
+    font-size: 11px;
+    color: #999;
+    padding: 5px;
+}
+
+#customers {
+    max-height: 283px;
+    overflow: auto;
 }

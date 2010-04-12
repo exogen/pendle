@@ -1,0 +1,30 @@
+<div>
+  <h3>
+    Browse users
+    {% if query %}
+    <span class="query">matching &#147;{{ query }}&#148;</span>
+    <a href="javascript:void(0)" class="all">Browse all</a>
+    {% endif %}
+  </h3>
+  <div id="customers">
+    <table>
+      {% if not customers %}
+      <caption align="bottom">No users found.</caption>
+      {% endif %}
+      <thead>
+        <tr><th>Name</th><th>Username</th><th>ID number</th></tr>
+      </thead>
+      <tbody>
+        {% for customer in customers %}
+        {% with customer.get_profile as profile %}
+        <tr>
+          <td class="name">{{ customer.get_full_name|default:customer.username }}</td>
+          <td class="username">{{ customer.username }}</td>
+          <td class="number">{{ profile.id_number|default:"" }}</td>
+        </tr>
+        {% endwith %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>

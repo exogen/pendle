@@ -1,0 +1,14 @@
+<div id="asset" class="result">
+  <div class="header">
+    <h3>{{ asset.product }}</h3>
+    {% if asset.product.manufacturer %}<h4>{{ asset.product.manufacturer }}</h4>{% endif %}
+  </div>
+  <dl class="details">
+    <dt>Status</dt>
+    <dd class="status">Available</dd>
+    <dt>Condition</dt>
+    <dd class="condition">{{ asset.get_condition_display }}</dd>
+    <dt>Notes</dt>
+    <dd class="notes">{{ asset.staff_notes|default:"None" }}</dd>
+  </dl>
+</div>
