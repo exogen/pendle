@@ -115,7 +115,7 @@ jQuery(function($) {
         scan: function(query, force) {
             query = $.trim(query);
             this._trigger('scan', null, {query: query, force: force});
-            if (force || query != this.options.query) {
+            if (force || (query && query != this.options.query)) {
                 this.options.query = query;
                 this.send(query);
             }
@@ -208,6 +208,7 @@ jQuery(function($) {
     $.widget('ui.scanner', Scanner);
 
     $('#scan-customer').scanner({
+        name: 'customer',
         ready: function() {
             $('#scan-asset').scanner('focus');
         },
@@ -216,6 +217,7 @@ jQuery(function($) {
         }
     }).scanner('focus');
     $('#scan-asset').scanner({
+        name: 'asset',
         browse: function() {
             $('#scan-customer').scanner('option', 'browser').drawer('close', false);
         }

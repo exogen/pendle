@@ -4,9 +4,30 @@
     Browse assets
     {% if query %}
     <span class="query">matching &#147;{{ query }}&#148;</span>
-    <a href="javascript:void(0)" class="all">Browse all</a>
+    {% endif %}
+    by {{ filter }}
+    {% if filter != "type" %}
+    <a href="{% url assets:browse-assets transaction_key %}?query={{ query|urlencode }}&filter=type" class="filter">Browse by type</a>
+    {% endif %}
+    {% if filter != "manufacturer" %}
+    <a href="{% url assets:browse-assets transaction_key %}?query={{ query|urlencode }}&filter=manufacturer" class="filter">Browse by manufacturer</a>
     {% endif %}
   </h3>
+  {% if filter == "type" %}
+  <ul id="types" class="filter">
+    {% for product_type in product_types %}
+    <li><a href="javascript:void(0)">{{ product_type }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if filter == "manufacturer" %}
+  <ul id="manufacturers" class="filter">
+    {% for manufacturer in manufacturers %}
+    <li><a href="javascript:void(0)">{{ manufacturer }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  <!--
   <div id="assets">
     <table>
       {% if not assets %}
@@ -25,4 +46,5 @@
       </tbody>
     </table>
   </div>
+  -->
 </div>
