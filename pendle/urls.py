@@ -8,6 +8,7 @@ from django.conf import settings
 admin.autodiscover()
 
 urlpatterns = patterns('',
+    url(r'^$', 'pendle.views.home', name='home'),
     url(r'^admin/', include('pendle.institution.urls',
                             namespace='institution', app_name='institution')),
     url(r'^admin/', include('pendle.assets.urls',

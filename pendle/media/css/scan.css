@@ -212,9 +212,10 @@ div.browse caption {
 
 #customers,
 #assets {
-    max-height: 282px;
+    max-height: 281px;
     overflow: auto;
     border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
 }
 
 div.browse h4 {
