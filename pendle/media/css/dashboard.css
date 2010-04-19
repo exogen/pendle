@@ -1,0 +1,134 @@
+#content h1 {
+    margin-bottom: 0;
+}
+
+#content h2 {
+    margin: 0;
+}
+
+#content p.catalog {
+    margin-bottom: 15px;
+}
+
+.section {
+    margin: 0 30px 15px 15px;
+}
+
+#activity,
+#assets,
+#fines {
+    float: left;
+    clear: left;
+    min-width: 25%;
+    max-width: 45%;
+}
+
+#calendar table {
+    border: 1px solid #ccc;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+#calendar tr:last-child td {
+    border-bottom: 0;
+}
+
+#calendar th {
+    border-top: 0;
+    border-left: 0;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+    background: #fff url('../admin/img/admin/nav-bg.gif') repeat-x 0% 50%;
+    color: #999;
+}
+
+#calendar td {
+    line-height: 18px;
+    height: 32px;
+    border-right: 1px solid #eee;
+    border-bottom: 1px solid #eee;
+    padding: 3px 6px 3px 4px;
+    text-align: left;
+    color: #666;
+}
+
+#calendar td:last-child,
+#calendar th:last-child {
+    border-right: 0;
+}
+
+#calendar td.today {
+    background-color: #ffc;
+    color: #430;
+}
+
+#calendar td.previous-month,
+#calendar td.next-month {
+    color: #aaa;
+}
+
+#calendar td .day {
+    float: right;
+    margin-left: 1em;
+}
+
+#calendar td.today .day {
+    font-weight: bold;
+}
+
+#calendar td a {
+    white-space: nowrap;
+    display: inline-block;
+    margin-bottom: 3px;
+    padding: 0 5px;
+    background: #ddd;
+    color: #666;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+}
+
+#calendar td.today a {
+    background: #d8d0b2;
+    color: #653;
+}
+
+#calendar td a.overdue {
+    background: #d85454;
+    color: #fff;
+}
+
+#events {
+    margin: 0;
+    padding: 0;
+}
+
+#events h3 {
+    font-size: 11px;
+    margin: 3px 0 4px 0;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#events li {
+    list-style-type: none;
+}
+
+#events ul {
+    margin: 0;
+    padding-left: 1.5em;
+}
+
+#events ul li {
+    font-size: 12px;
+    list-style-type: square;
+    margin-bottom: 4px;
+}
+
+#events li .timestamp {
+    font-size: 11px;
+    margin-left: 2px;
+    color: #b2b2ac;
+}

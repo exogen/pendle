@@ -9,6 +9,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'pendle.views.home', name='home'),
+    url(r'^admin/dashboard/$', 'pendle.views.dashboard', name='dashboard'),
     url(r'^admin/', include('pendle.institution.urls',
                             namespace='institution', app_name='institution')),
     url(r'^admin/', include('pendle.assets.urls',

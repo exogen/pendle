@@ -111,6 +111,11 @@ jQuery(function($) {
                 scanner.reset(true).focus();
                 scanner.options.form.submit();
             });
+            $('ul.filter a, a.filter', this.options.browser).live('click', function(e) {
+                var url = $(this).attr('href');
+                scanner.options.browser.drawer('load', url);
+                return false;
+            });
         },
         scan: function(query, force) {
             query = $.trim(query);

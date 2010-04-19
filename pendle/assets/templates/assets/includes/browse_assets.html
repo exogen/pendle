@@ -5,29 +5,31 @@
     {% if query %}
     <span class="query">matching &#147;{{ query }}&#148;</span>
     {% endif %}
-    by {{ filter }}
-    {% if filter != "type" %}
-    <a href="{% url assets:browse-assets transaction_key %}?query={{ query|urlencode }}&filter=type" class="filter">Browse by type</a>
-    {% endif %}
+    {% if filter %}by {{ filter }}{% endif %}
+    {% if filter == "manufacturer" and manufacturer %}&#147;{{ manufacturer }}&#148;{% endif %}
+    {% if filter == "type" and product_type %}&#147;{{ product_type }}&#148;{% endif %}
     {% if filter != "manufacturer" %}
-    <a href="{% url assets:browse-assets transaction_key %}?query={{ query|urlencode }}&filter=manufacturer" class="filter">Browse by manufacturer</a>
+    <a href="{% url assets:browse-assets transaction_key %}?catalog={{ catalog.id }}&query={{ query|urlencode }}&filter=manufacturer" class="filter">Browse by manufacturer</a>
+    {% endif %}
+    {% if filter != "type" %}
+    <a href="{% url assets:browse-assets transaction_key %}?catalog={{ catalog.id }}&query={{ query|urlencode }}&filter=type" class="filter">Browse by type</a>
     {% endif %}
   </h3>
-  {% if filter == "type" %}
-  <ul id="types" class="filter">
-    {% for product_type in product_types %}
-    <li><a href="javascript:void(0)">{{ product_type }}</a></li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-  {% if filter == "manufacturer" %}
+  {% if filter == "manufacturer" and not manufacturer %}
   <ul id="manufacturers" class="filter">
     {% for manufacturer in manufacturers %}
-    <li><a href="javascript:void(0)">{{ manufacturer }}</a></li>
+    <li><a href="{% url assets:browse-assets transaction_key %}?catalog={{ catalog.id }}&query={{ query|urlencode }}&filter=manufacturer&manufacturer={{ manufacturer.id }}">{{ manufacturer }}</a></li>
     {% endfor %}
   </ul>
   {% endif %}
-  <!--
+  {% if filter == "type" and not product_type %}
+  <ul id="types" class="filter">
+    {% for product_type in product_types %}
+    <li><a href="{% url assets:browse-assets transaction_key %}?catalog={{ catalog.id}}&query={{ query|urlencode }}&filter=type&type={{ product_type.id }}">{{ product_type }}</a></li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% if assets != None %}
   <div id="assets">
     <table>
       {% if not assets %}
@@ -46,5 +48,5 @@
       </tbody>
     </table>
   </div>
-  -->
+  {% endif %}
 </div>

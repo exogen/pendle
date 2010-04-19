@@ -1,0 +1,108 @@
+{% extends "admin/base_site.html" %}
+{% load i18n adminmedia htmlutils humanize textutils %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/dashboard.css" />
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% admin_media_prefix %}js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/dashboard.js"></script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo; Dashboard
+</div>
+{% endblock %}
+
+{% block content %}
+
+<p class="help catalog">{{ catalog }}</p>
+
+<div id="activity" class="section">
+  <h2>Recent activity</h2>
+  <ul id="events">
+    {% regroup activity_stream by timestamp.date as event_dates %}
+    {% for event_date in event_dates %}
+    <li>
+      <h3>{{ event_date.grouper|naturalday:"l, F j"|capfirst }}</h3>
+      <ul>
+        {% for event in event_date.list %}
+        <li class="{{ event.type }}">
+          {% if event.type == "transaction" %}
+          {{ event.transaction.customer.get_full_name|default:event.transaction.customer.username }} checked
+          {% if event.reservations_in %}
+          {{ event.reservations_in.count }} asset{{ event.reservations_in.count|pluralize }}
+          in{% if event.reservations_out %},{% endif %}
+          {% endif %}
+          {% if event.reservations_out %}
+          {{ event.reservations_out.count }} asset{{ event.reservations_out.count|pluralize }} out
+          {% endif %}
+          {% endif %}
+          {% if event.type == "overdue" %}
+          Asset <a href="{{ event.reservation.asset.get_absolute_url }}">{{ event.reservation.asset }}</a> is overdue
+          {% endif %}
+          {% if event.type == "fine-payment" %}
+          {{ event.fine_payment.customer.get_full_name|default:event.fine_payment.customer.username }} paid
+          <span class="amount">{{ event.fine_payment.amount|dollars }}</span> in fines
+          {% endif %}
+          <span class="timestamp">{{ event.timestamp|timesince }} ago</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% endfor %}
+  </ul>
+</div>
+
+<div id="assets" class="section">
+  <h2>Assets</h2>
+</div>
+
+<div id="fines" class="section">
+  <h2>Fines</h2>
+</div>
+
+<div id="calendar" class="section">
+  <h2>Calendar</h2>
+  <p class="help">{{ today|date:"l, F j, Y" }}</p>
+  <table>
+    <colgroup span="5" width="20%"/>
+    <thead>
+      <tr>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in calendar_data %}
+      <tr>
+        {% for day in week %}
+        <td{% if day.is_today %} class="today"{% endif %}{% if day.is_previous_month %} class="previous-month"{% endif %}{% if day.is_next_month %} class="next-month"{% endif %}>
+          <span class="day">{{ day.date.day }}</span>
+          {% if day.reservations_overdue %}
+          <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.overdue|urldata }}" class="overdue">{{ day.reservations_overdue.count }} overdue</a>
+          {% endif %}
+          {% if day.reservations_in %}
+          <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.in|urldata }}" class="in">{{ day.reservations_in.count }} in</a>
+          {% endif %}
+          {% if day.reservations_out %}
+          <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.out|urldata }}" class="out">{{ day.reservations_out.count }} out</a>
+          {% endif %}
+          {% if day.reservations_due %}
+          <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.due|urldata }}" class="due">{{ day.reservations_due.count }} due</a>
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
