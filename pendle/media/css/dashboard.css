@@ -178,11 +178,11 @@
 }
 
 .section ul.actions a {
-    border-bottom: 1px solid #def;
+    border-bottom: 1px solid #d8e2ec;
 }
 
 .section ul.actions a:hover {
-    border-bottom: 1px solid #abc;
+    border-bottom: 1px solid #a2aabc;
 }
 
 #due tr:first-child td {

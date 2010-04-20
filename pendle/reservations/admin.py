@@ -23,11 +23,13 @@ class CheckinInline(admin.TabularInline):
     can_delete = False
 
 
-class CheckoutInline(CheckinInline):
+class CheckoutInline(admin.TabularInline):
+    model = Reservation
     fk_name = 'transaction_out'
     verbose_name = "asset"
     verbose_name_plural = "checked out"
     exclude = ['transaction_in']
+    extra = 0
 
 
 class TransactionAdmin(admin.ModelAdmin):
