@@ -12,7 +12,7 @@ class FineManager(models.Manager):
     def get_amount_due(self, user):
         issued = user.fines.aggregate(total=Sum('amount'))
         paid = user.fine_payments.aggregate(total=Sum('amount'))
-        return issued['total'] - paid['total']
+        return (issued['total'] or 0) - (paid['total'] or 0)
 
 class Fine(models.Model):
     customer = models.ForeignKey(User, related_name='fines')
