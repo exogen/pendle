@@ -199,3 +199,14 @@
     font-weight: bold;
     color: #594;
 }
+
+.section caption,
+.section li.empty {
+    font-size: 11px;
+    color: #999;
+    white-space: nowrap;
+}
+
+#events li.empty {
+    padding: 3px 0;
+}

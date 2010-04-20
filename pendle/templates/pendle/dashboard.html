@@ -57,6 +57,8 @@
         {% endfor %}
       </ul>
     </li>
+    {% empty %}
+    <li class="empty">No recent activity.</li>
     {% endfor %}
   </ul>
 </div>
@@ -84,11 +86,11 @@
           {% if day.reservations_overdue %}
           <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.overdue|urldata }}" class="overdue">{{ day.reservations_overdue.count }} overdue</a>
           {% endif %}
-          {% if day.reservations_in %}
-          <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.in|urldata }}" class="in">{{ day.reservations_in.count }} in</a>
-          {% endif %}
           {% if day.reservations_out %}
           <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.out|urldata }}" class="out">{{ day.reservations_out.count }} out</a>
+          {% endif %}
+          {% if day.reservations_in %}
+          <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.in|urldata }}" class="in">{{ day.reservations_in.count }} in</a>
           {% endif %}
           {% if day.reservations_due %}
           <a href="{% url admin:reservations_reservation_changelist %}?{{ day.queries.due|urldata }}" class="due">{{ day.reservations_due.count }} due</a>
@@ -109,9 +111,36 @@
   </ul>
   <h3>Summary</h3>
   <ul class="summary">
-    <li><a href="{% url admin:assets_asset_changelist %}?catalog={{ catalog.id }}">{{ assets.count|intcomma }} asset{{ assets.count|pluralize }}</a> in this catalog</li>
-    <li><a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.id }}&transaction_in__isnull=1">{{ reservations_out.count|intcomma }} asset{{ reservations_out.count|pluralize }}</a> currently checked out</li>
-    <li><a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.id }}&transaction_in__isnull=1&due_date__lte={{ now|urlencode }}&ot=asc&o=5">{{ reservations_overdue.count|intcomma }} asset{{ reservations_overdue.count|pluralize }}</a> overdue</li>
+    <li>
+      {% if assets %}
+      <a href="{% url admin:assets_asset_changelist %}?catalog={{ catalog.id }}">
+        {{ assets.count|intcomma }} asset{{ assets.count|pluralize }}
+      </a>
+      {% else %}
+      No assets
+      {% endif %}
+      in this catalog
+    </li>
+    <li>
+      {% if reservations_out %}
+      <a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.id }}&transaction_in__isnull=1">
+        {{ reservations_out.count|intcomma }} asset{{ reservations_out.count|pluralize }}
+      </a>
+      {% else %}
+      No assets
+      {% endif %}
+      currently checked out
+    </li>
+    <li>
+      {% if reservations_overdue %}
+      <a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.id }}&transaction_in__isnull=1&due_date__lte={{ now|urlencode }}&ot=asc&o=5">
+        {{ reservations_overdue.count|intcomma }} asset{{ reservations_overdue.count|pluralize }}
+      </a>
+      {% else %}
+      No assets
+      {% endif %}
+      overdue
+    </li>
   </ul>
 </div>
 
@@ -123,13 +152,20 @@
   </ul>
   <h3>Outstanding fines</h3>
   <table id="due">
+    {% if not fines_due %}
+    <caption align="bottom">No outstanding fines.</caption>
+    {% endif %}
     <colgroup>
         <col width="*"/>
         <col align="char" char="."/>
     </colgroup>
     <tbody>
       {% for fine in fines_due %}
-      <tr><td>{{ fine.customer }}</td><td class="amount">{{ fine.amount|dollars }}</td></tr>
+      <tr>
+        <td>{{ fine.customer }}</td>
+        <td class="amount">{{ fine.amount|dollars }}</td>
+        <td><a href="{% url admin:fines_finepayment_add %}?customer={{ fine.customer.id }}&amount={{ fine.amount }}">Pay</a></td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
