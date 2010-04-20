@@ -16,6 +16,7 @@
 
 #activity {
     float: right;
+    min-width: 20%;
     max-width: 45%;
 }
 
