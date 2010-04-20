@@ -132,9 +132,14 @@ input[type='button'],
 
 #changelist p.fine.due {
     font-weight: bold;
-    color: #f44;
+    color: #d22;
 }
 
 #profile_set-group textarea.vLargeTextField {
     height: 4.5em;
 }
+
+#transaction_form #reservations_in-group tr.add-row {
+    display: none;
+}
+

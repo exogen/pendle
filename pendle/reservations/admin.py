@@ -19,6 +19,8 @@ class CheckinInline(admin.TabularInline):
     verbose_name = "asset"
     verbose_name_plural = "checked in"
     extra = 0
+    readonly_fields = ['asset', 'transaction_out', 'due_date']
+    can_delete = False
 
 
 class CheckoutInline(CheckinInline):
@@ -30,7 +32,7 @@ class CheckoutInline(CheckinInline):
 
 class TransactionAdmin(admin.ModelAdmin):
     #form = TransactionForm
-    inlines = [CheckoutInline]
+    inlines = [CheckinInline, CheckoutInline]
     list_display = ['__unicode__',
                     related_link(Transaction, 'customer',
                                  admin_order_field='customer__last_name'),

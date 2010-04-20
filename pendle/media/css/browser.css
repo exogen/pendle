@@ -1,0 +1,93 @@
+body {
+    background: #eee;
+    margin: 0;
+    padding: 0;
+}
+
+h3 {
+    font-size: 12px;
+    margin-top: 0;
+    margin-bottom: 0.5em;
+    text-shadow: #fff 1px 1px 0;
+}
+
+h3 a {
+    font-size: 11px;
+    line-height: 1;
+    font-weight: normal;
+    margin-left: 0.5em;
+    text-shadow: none;
+}
+
+table {
+    width: 100%;
+}
+
+table th {
+    background: transparent;
+    color: #999;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #ddd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+tbody tr:hover td {
+    cursor: pointer;
+    background: #417690;
+    color: #fff;
+}
+
+caption {
+    font-size: 11px;
+    color: #999;
+    padding: 5px;
+}
+
+h4 {
+    clear: both;
+}
+
+ul.filter {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    border-top: 1px solid #ddd;
+}
+
+ul.filter li {
+    float: left;
+    width: 30%;
+    line-height: 13px;
+    padding: 0;
+}
+
+ul.filter li a {
+    display: block;
+    padding: 5px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+ul.filter li a:hover {
+    background: #417690;
+    color: #fff;
+}
+
+#customers,
+#assets {
+    max-height: 281px;
+    overflow: auto;
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
+
+#manufacturers,
+#types {
+    overflow: auto;
+    max-height: 253px;
+}

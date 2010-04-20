@@ -15,7 +15,8 @@ class NoteAdmin(admin.ModelAdmin):
     search_fields = ['message', 'author__username', 'author__first_name',
                      'author__last_name']
     readonly_fields = ['timestamp']
-    fieldsets = [(None, {'fields': ('message', 'catalog', 'author', 'timestamp')})]
+    fieldsets = [(None, {'fields': ('message', 'catalog', 'author',
+                                    'timestamp')})]
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'author':

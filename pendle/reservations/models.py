@@ -9,6 +9,8 @@ from pendle.assets.models import Asset
 
 class Transaction(models.Model):
     catalog = models.ForeignKey(Catalog, related_name='transactions')
+    token = models.CharField(max_length=24, null=True, blank=True,
+                             editable=False)
     staff_member = models.ForeignKey(User, related_name='staff_transactions',
                                      limit_choices_to={'is_staff': True})
     customer = models.ForeignKey(User, related_name='transactions')

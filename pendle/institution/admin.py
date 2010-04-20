@@ -54,7 +54,7 @@ class PendleUserAdmin(UserAdmin):
     ordering = ['last_name', 'first_name', 'username']
     list_display = ['username', 'first_name', 'last_name']
     list_display_links = ['username']
-    list_filter = ['groups', 'is_staff']
+    list_filter = ['groups', 'is_staff', 'date_joined']
     list_per_page = 60
     search_fields = ['username', 'first_name', 'last_name', 'email',
                      'profile__id_number']

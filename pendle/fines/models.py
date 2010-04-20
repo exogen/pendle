@@ -1,16 +1,18 @@
 from datetime import datetime
 
 from django.db import models
+from django.db.models import Sum
 from django.contrib.admin.models import User
 
 from reservations.models import Reservation
+from utils.text import format_dollars
 
 
 class FineManager(models.Manager):
     def get_amount_due(self, user):
-        amount_issued = sum(fine.amount for fine in user.fines.all())
-        amount_paid = sum(payment.amount for payment in user.fine_payments.all())
-        return amount_issued - amount_paid
+        issued = user.fines.aggregate(total=Sum('amount'))
+        paid = user.fine_payments.aggregate(total=Sum('amount'))
+        return issued['total'] - paid['total']
 
 class Fine(models.Model):
     customer = models.ForeignKey(User, related_name='fines')
@@ -22,6 +24,11 @@ class Fine(models.Model):
 
     objects = FineManager()
 
+    class Meta:
+        ordering = ['-date_issued']
+
+    def __unicode__(self):
+        return "%s fined %s" % (self.customer, format_dollars(self.amount))
 
 class FinePayment(models.Model):
     customer = models.ForeignKey(User, related_name='fine_payments')
@@ -31,4 +38,10 @@ class FinePayment(models.Model):
     staff_member = models.ForeignKey(User, verbose_name="received by",
         related_name='fine_payments_received',
         limit_choices_to={'is_staff': True})
+
+    class Meta:
+        ordering = ['-date_received']
+
+    def __unicode__(self):
+        return "%s paid %s" % (self.customer, format_dollars(self.amount))
 

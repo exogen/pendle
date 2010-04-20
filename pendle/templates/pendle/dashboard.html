@@ -32,21 +32,25 @@
         {% for event in event_date.list %}
         <li class="{{ event.type }}">
           {% if event.type == "transaction" %}
-          {{ event.transaction.customer.get_full_name|default:event.transaction.customer.username }} checked
+          {{ event.transaction.customer.get_full_name|default:event.transaction.customer.username }}
           {% if event.reservations_in %}
-          {{ event.reservations_in.count }} asset{{ event.reservations_in.count|pluralize }}
-          in{% if event.reservations_out %},{% endif %}
+          checked in
+          {{ event.reservations_in.count }} asset{{ event.reservations_in.count|pluralize }}{% if event.reservations_out %},{% endif %}
           {% endif %}
           {% if event.reservations_out %}
-          {{ event.reservations_out.count }} asset{{ event.reservations_out.count|pluralize }} out
+          checked out
+          {{ event.reservations_out.count }} asset{{ event.reservations_out.count|pluralize }}
           {% endif %}
+          <a class="related" href="{% url admin:reservations_transaction_change event.transaction.id %}"></a>
           {% endif %}
           {% if event.type == "overdue" %}
           Asset <a href="{{ event.reservation.asset.get_absolute_url }}">{{ event.reservation.asset }}</a> is overdue
+          <a class="related" href="{% url admin:reservations_reservation_change event.reservation.id %}"></a>
           {% endif %}
           {% if event.type == "fine-payment" %}
           {{ event.fine_payment.customer.get_full_name|default:event.fine_payment.customer.username }} paid
           <span class="amount">{{ event.fine_payment.amount|dollars }}</span> in fines
+          <a class="related" href="{% url admin:fines_finepayment_change event.fine_payment.id %}"></a>
           {% endif %}
           <span class="timestamp">{{ event.timestamp|timesince }} ago</span>
         </li>
@@ -55,14 +59,6 @@
     </li>
     {% endfor %}
   </ul>
-</div>
-
-<div id="assets" class="section">
-  <h2>Assets</h2>
-</div>
-
-<div id="fines" class="section">
-  <h2>Fines</h2>
 </div>
 
 <div id="calendar" class="section">
@@ -100,6 +96,40 @@
         </td>
         {% endfor %}
       </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div id="assets" class="section">
+  <h2>Assets</h2>
+  <ul class="actions">
+    <li><a href="{% url admin:assets_asset_add %}">Add an asset</a></li>
+    <li><a href="{% url reservations:scan %}">Check in/out assets</a></li>
+  </ul>
+  <h3>Summary</h3>
+  <ul class="summary">
+    <li><a href="{% url admin:assets_asset_changelist %}?catalog={{ catalog.id }}">{{ assets.count|intcomma }} asset{{ assets.count|pluralize }}</a> in this catalog</li>
+    <li><a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.id }}&transaction_in__isnull=1">{{ reservations_out.count|intcomma }} asset{{ reservations_out.count|pluralize }}</a> currently checked out</li>
+    <li><a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.id }}&transaction_in__isnull=1&due_date__lte={{ now|urlencode }}&ot=asc&o=5">{{ reservations_overdue.count|intcomma }} asset{{ reservations_overdue.count|pluralize }}</a> overdue</li>
+  </ul>
+</div>
+
+<div id="fines" class="section">
+  <h2>Fines</h2>
+  <ul class="actions">
+    <li><a href="{% url admin:fines_fine_add %}">Issue a fine</a></li>
+    <li><a href="{% url admin:fines_finepayment_add %}">Pay a fine</a></li>
+  </ul>
+  <h3>Outstanding fines</h3>
+  <table id="due">
+    <colgroup>
+        <col width="*"/>
+        <col align="char" char="."/>
+    </colgroup>
+    <tbody>
+      {% for fine in fines_due %}
+      <tr><td>{{ fine.customer }}</td><td class="amount">{{ fine.amount|dollars }}</td></tr>
       {% endfor %}
     </tbody>
   </table>

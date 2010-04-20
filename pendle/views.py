@@ -7,6 +7,9 @@ from dateutil.relativedelta import relativedelta, MO, TU, WE, TH, FR
 from dateutil.rrule import rrule, DAILY
 from django.shortcuts import redirect, render_to_response
 from django.template import RequestContext
+from django.db.models import Sum
+from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 
 from pendle.catalog.models import Catalog
 from pendle.reservations.models import Transaction, Reservation
@@ -14,7 +17,7 @@ from pendle.fines.models import Fine, FinePayment
 
 
 TWO_WEEKS_LAST_MONDAY = relativedelta(weeks=2, weekday=MO(-1))
-FOUR_WEEKS_NEXT_FRIDAY = relativedelta(weeks=4, weekday=FR)
+TWO_WEEKS_NEXT_FRIDAY = relativedelta(weeks=2, weekday=FR)
 CALENDAR_DAYS = [MO, TU, WE, TH, FR]
 
 def home(request):
@@ -25,7 +28,7 @@ def get_calendar_data(catalog, now=None):
         now = datetime.now()
     today = now.date()
     calendar_start = today - TWO_WEEKS_LAST_MONDAY
-    calendar_end = today + FOUR_WEEKS_NEXT_FRIDAY
+    calendar_end = today + TWO_WEEKS_NEXT_FRIDAY
     calendar_days = rrule(DAILY, dtstart=calendar_start, until=calendar_end,
                           byweekday=CALENDAR_DAYS)
     calendar_data = []
@@ -99,16 +102,47 @@ def get_activity_stream(catalog, now=None, max_num=25):
                        'reservation': reservation,
                        'timestamp': reservation.due_date})
 
-    return sorted(events, key=itemgetter('timestamp'), reverse=True)
+    return sorted(events, key=itemgetter('timestamp'), reverse=True)[:max_num]
 
+def get_fines_due():
+    fines = Fine.objects.values('customer').annotate(
+        total=Sum('amount')).order_by()
+    payments = FinePayment.objects.values('customer').annotate(
+        total=Sum('amount')).order_by()
+    customer_payments = {}
+    for payment in payments:
+        customer_payments[payment['customer']] = payment['total']
+    fines_due = []
+    for fine in fines:
+        customer_id = fine['customer']
+        amount = fine['total']
+        if customer_id in customer_payments:
+            amount -= customer_payments[customer_id]
+        fines_due.append({'customer': User.objects.get(id=customer_id),
+                          'amount': amount})
+    return sorted(fines_due, key=itemgetter('amount'), reverse=True)
+
+@staff_member_required
 def dashboard(request):
     catalog = Catalog.objects.get_or_default()
     now = datetime.now()
     today = now.date()
     calendar_data = get_calendar_data(catalog, now)
     activity_stream = get_activity_stream(catalog, now)
+    fines_due = get_fines_due()
+    assets = catalog.assets.all()
+    reservations_out = Reservation.objects.filter(
+        asset__catalog=catalog,
+        transaction_in__isnull=True)
+    reservations_overdue = Reservation.objects.filter(
+        asset__catalog=catalog,
+        transaction_in__isnull=True,
+        due_date__lte=now)
     return render_to_response("pendle/dashboard.html", {
         'title': "Dashboard", 'catalog': catalog, 'today': today, 'now': now,
-        'calendar_data': calendar_data, 'activity_stream': activity_stream},
+        'calendar_data': calendar_data, 'activity_stream': activity_stream,
+        'fines_due': fines_due, 'assets': assets,
+        'reservations_out': reservations_out,
+        'reservations_overdue': reservations_overdue},
         context_instance=RequestContext(request))
 

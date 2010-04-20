@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
+from django.contrib.admin.views.decorators import staff_member_required
 
 from pendle.catalog.models import Catalog
 from pendle.institution.forms import ScanCustomerForm
@@ -14,6 +15,7 @@ def generate_transaction_key(request):
     timestamp = datetime.now().isoformat()
     return hashlib.new('sha1', session_key + timestamp).hexdigest()
 
+@staff_member_required
 def scan(request):
     catalog = Catalog.objects.get_or_default()
     customer_form = ScanCustomerForm(auto_id='customer-%s')
@@ -28,6 +30,7 @@ def scan(request):
         'transaction_key': transaction_key,
         }, context_instance=RequestContext(request))
 
+@staff_member_required
 def new_transaction(request, transaction_key):
     pass
 
