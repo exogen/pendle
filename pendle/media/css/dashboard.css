@@ -15,13 +15,15 @@
 }
 
 #activity {
-    float: right;
+    float: left;
     min-width: 20%;
     max-width: 45%;
 }
 
-#assets {
+#assets,
+#fines {
     float: left;
+    margin-left: 0;
 }
 
 #calendar table {
