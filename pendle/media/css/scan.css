@@ -231,8 +231,9 @@ div.browse ul.filter {
 
 div.browse ul.filter li {
     float: left;
-    width: 30%;
+    width: 31%;
     line-height: 13px;
+    list-style: none;
     padding: 0;
 }
 
