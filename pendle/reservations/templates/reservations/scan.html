@@ -2,13 +2,14 @@
 {% load i18n adminmedia %}
 
 {% block extrastyle %}{{ block.super }}
-<link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/scan.css" />
+<link rel="stylesheet" type="text/css" media="all" href="{% admin_media_prefix %}css/forms.css"/>
+<link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/scan.css"/>
 {% endblock %}
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript" src="{% admin_media_prefix %}js/jquery.min.js"></script>
 <script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/scan.js"></script>
+{{ media }}
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -53,6 +54,10 @@
 <div id="transaction">
   <h2>Transaction summary</h2>
   <p class="help">Scan items to add them to this transaction.</p>
+  <div id="transaction-assets" class="empty">There are no assets in this transaction.</div>
+  <div class="submit-row">
+    <input type="submit" class="default" value="Complete transaction"/>
+  </div>
 </div>
 
 {% endblock %}

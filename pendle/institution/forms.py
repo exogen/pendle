@@ -14,7 +14,7 @@ class ScheduledCourseForm(forms.ModelForm):
 
 class ScanCustomerForm(forms.Form):
     class Media:
-        js = ('js/scan.js',)
+        js = ('js/drawer.js', 'js/scan.js',)
 
     query = forms.CharField(label="ID number",
         widget=forms.TextInput(attrs={'class': 'query', 'spellcheck': 'false'}),

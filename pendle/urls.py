@@ -9,14 +9,14 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', 'pendle.views.home', name='home'),
-    url(r'^admin/dashboard/$', 'pendle.views.dashboard', name='dashboard'),
+    url(r'^admin/', include('pendle.dashboard.urls',
+                            namespace='dashboard')),
     url(r'^admin/', include('pendle.institution.urls',
-                            namespace='institution', app_name='institution')),
+                            namespace='institution')),
     url(r'^admin/', include('pendle.assets.urls',
-                            namespace='assets', app_name='assets')),
+                            namespace='assets')),
     url(r'^admin/', include('pendle.reservations.urls',
-                            namespace='reservations',
-                            app_name='reservations')),
+                            namespace='reservations')),
     url(r'^admin/', include(admin.site.urls)),
 )
 

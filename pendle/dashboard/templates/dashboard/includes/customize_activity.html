@@ -1,0 +1,11 @@
+<form action="{% url dashboard:activity-options %}" method="POST">
+  <div class="options">
+    <div class="field">Show these kinds of events: {{ form.types }}</div>
+    <div class="field"><label for="{{ form.show_limit.auto_id }}">Show {{ form.limit }} recent events</label></div>
+    {% csrf_token %}
+  </div>
+  <div class="actions">
+    <input type="submit" id="activity-options-apply" class="button default" value="Apply"/>
+    <input type="reset" id="activity-options-cancel" class="button" value="Cancel"/>
+  </div>
+</form>

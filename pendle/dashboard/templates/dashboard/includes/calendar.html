@@ -1,0 +1,49 @@
+{% load humanize htmlutils %}
+<div id="calendar" class="section">
+  <h2>Calendar</h2>
+  <p class="help">{{ today|date:"l, F j, Y" }}</p>
+  <table>
+    <colgroup span="5" width="20%"/>
+    <thead>
+      <tr>
+        <th>Monday</th>
+        <th>Tuesday</th>
+        <th>Wednesday</th>
+        <th>Thursday</th>
+        <th>Friday</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in calendar_data %}
+      <tr>
+        {% for day in week %}
+        <td{% if day.is_today %} class="today"{% endif %}{% if day.is_previous_month %} class="previous-month"{% endif %}{% if day.is_next_month %} class="next-month"{% endif %}>
+          <span class="day">{{ day.date.day }}</span>
+          {% url admin:reservations_reservation_changelist as reservations_url %}
+          {% if day.reservations.overdue %}
+          <a href="{{ reservations_url }}?{{ day.queries.overdue|urlparams }}"
+             class="overdue" title="List assets that became overdue {{ day.date|naturalday:"N j" }}">
+          {{ day.reservations.overdue.count }} overdue</a>
+          {% endif %}
+          {% if day.reservations.out %}
+          <a href="{{ reservations_url }}?{{ day.queries.out|urlparams }}"
+             class="out" title="List assets checked out {{ day.date|naturalday:"N j" }}">
+          {{ day.reservations.out.count }} out</a>
+          {% endif %}
+          {% if day.reservations.in %}
+          <a href="{{ reservations_url }}?{{ day.queries.in|urlparams }}"
+             class="in" title="List assets checked in {{ day.date|naturalday:"N j" }}">
+          {{ day.reservations.in.count }} in</a>
+          {% endif %}
+          {% if day.reservations.due %}
+          <a href="{{ reservations_url }}?{{ day.queries.due|urlparams }}"
+             class="due" title="List assets due {{ day.date|naturalday:"N j" }}">
+          {{ day.reservations.due.count }} due</a>
+          {% endif %}
+        </td>
+        {% endfor %}
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

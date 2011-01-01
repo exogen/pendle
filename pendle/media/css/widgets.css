@@ -1,0 +1,8 @@
+input.dollars {
+    background-image: url('../images/dollars.png');
+    background-position: -1px 50%;
+    background-repeat: no-repeat;
+    padding-left: 21px;
+    font-weight: bold;
+    color: #443;
+}

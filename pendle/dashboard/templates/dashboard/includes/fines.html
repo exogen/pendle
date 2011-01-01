@@ -1,0 +1,29 @@
+{% load textutils %}
+<div id="fines" class="section">
+  <h2>Fines</h2>
+  <ul class="actions">
+    <li><a href="{% url admin:fines_fine_add %}">Issue a fine</a></li>
+    <li><a href="{% url admin:fines_finepayment_add %}">Pay a fine</a></li>
+  </ul>
+  <h3>Outstanding fines</h3>
+  <table id="due">
+    {% if not fines_due %}
+    <caption align="bottom">No outstanding fines.</caption>
+    {% endif %}
+    <colgroup>
+        <col width="*"/>
+        <col align="char" char="."/>
+    </colgroup>
+    <tbody>
+      {% for fine in fines_due %}
+      <tr>
+        <td>{{ fine.customer }}</td>
+        <td class="amount">{{ fine.amount|dollars }}</td>
+        <td>
+          <a href="{% url admin:fines_finepayment_add %}?customer={{ fine.customer.id }}&amount={{ fine.amount }}">Pay</a>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

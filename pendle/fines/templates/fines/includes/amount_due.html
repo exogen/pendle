@@ -1,0 +1,5 @@
+{% if amount_due > 0 %}
+<span class="fines due">${{ amount_due|floatformat:"-2" }}</span>
+{% else %}
+<span class="fines">$0</span>
+{% endif %}

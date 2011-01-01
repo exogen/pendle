@@ -2,15 +2,17 @@ from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.contrib.auth.admin import UserAdmin, GroupAdmin
 from django.utils.formats import number_format
+from django.db import models
+from adminbrowse import (ChangeListTemplateColumn, link_to_changelist,
+                         related_list)
 
 from pendle.institution.models import (Profile, Department, Course,
                                        ScheduledCourse)
 from pendle.institution.forms import ScheduledCourseForm
 from pendle.fines.models import Fine, FinePayment
+from pendle.fines.widgets import DollarsInput
 from pendle.utils import add
-from pendle.utils.text import format_dollars
-from pendle.utils.html import changelist_link
-from pendle.utils.admin import related_list, count_link
+from pendle.utils.admin import PendleModelAdmin
 
 
 class ProfileInline(admin.StackedInline):
@@ -30,6 +32,9 @@ class FineInline(admin.TabularInline):
     fk_name = 'customer'
     readonly_fields = ['date_issued']
     extra = 0
+    formfield_overrides = {
+        models.DecimalField: {'widget': DollarsInput, 'localize': True}}
+
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'staff_member':
@@ -42,12 +47,24 @@ class FinePaymentInline(admin.TabularInline):
     fk_name = 'customer'
     readonly_fields = ['date_received']
     extra = 0
+    formfield_overrides = {
+        models.DecimalField: {'widget': DollarsInput, 'localize': True}}
 
     def formfield_for_foreignkey(self, db_field, request, **kwargs):
         if db_field.name == 'staff_member':
             kwargs['initial'] = request.user
         return super(FinePaymentInline, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
+
+class FinesDueColumn(ChangeListTemplateColumn):
+    template_name = "fines/includes/amount_due.html"
+
+    def get_context(self, user):
+        context = super(FinesDueColumn, self).get_context(user)
+        context['amount_due'] = Fine.objects.get_amount_due(user)
+        return context
+
+fines_column = FinesDueColumn
 
 class PendleUserAdmin(UserAdmin):
     inlines = [ProfileInline, FineInline, FinePaymentInline]
@@ -67,50 +84,24 @@ class PendleUserAdmin(UserAdmin):
     def id_number(self, user):
         return user.get_profile().id_number or ""
 
-    list_display += ['email',
-                     related_list(User, 'departments',
-                                  admin_order_field='departments__name'),
-                     related_list(User, 'groups',
-                                  admin_order_field='groups__name')]
+    list_display += ['email', related_list(User, 'departments'),
+                     related_list(User, 'groups'), fines_column("fines")]
 
-    @add(list_display, "fines", allow_tags=True)
-    def list_fines(self, user):
-        amount_issued = sum(fine.amount for fine in user.fines.all())
-        amount_paid = sum(payment.amount for payment in user.fine_payments.all())
-        amount_due = amount_issued - amount_paid
-        classes = ['fine']
-        if amount_due > 0:
-            classes.append('due')
-        return '<p class="%s">%s<p>' % (' '.join(classes),
-                                        format_dollars(amount_due))
+    class Media:
+        css = {'all': ('adminbrowse/css/adminbrowse.css',)}
 
+class PendleGroupAdmin(PendleModelAdmin, GroupAdmin):
+    list_display = ['__unicode__', link_to_changelist(Group, 'user_set')]
 
-class PendleGroupAdmin(GroupAdmin):
-    list_display = ['__unicode__']
-
-    @add(list_display, "users", allow_tags=True)
-    def list_users(self, group):
-        user_count = group.user_set.count()
-        if user_count:
-            link = changelist_link(User, "", {'groups__id__exact': group},
-                                   title="Find users in this group")
-            return '<p class="count">%s %s</p>' % (link,
-                                                   number_format(user_count))
-        else:
-            return ""
-
-
-class DepartmentAdmin(admin.ModelAdmin):
+class DepartmentAdmin(PendleModelAdmin):
     filter_horizontal = ['users']
     list_display = ['__unicode__', 'subject_code',
-                    count_link(Department, 'users')]
-
+                    link_to_changelist(Department, 'users')]
 
 class ScheduledCourseInline(admin.TabularInline):
     model = ScheduledCourse
     form = ScheduledCourseForm
     extra = 0
-
 
 class CourseAdmin(admin.ModelAdmin):
     inlines = [ScheduledCourseInline]
@@ -118,7 +109,6 @@ class CourseAdmin(admin.ModelAdmin):
     list_display_links = list_display
     list_filter = ['subject_code']
     search_fields = ['subject_code', 'number', 'title']
-
 
 admin.site.unregister(User)
 admin.site.unregister(Group)

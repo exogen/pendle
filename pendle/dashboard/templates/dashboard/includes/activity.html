@@ -1,0 +1,50 @@
+{% load humanize textutils %}
+<div id="activity" class="section">
+  <h2>Recent activity</h2>
+  <ul class="actions">
+    <li>
+      <a href="#" id="activity-options-toggle">Customize activity feed</a>
+    </li>
+  </ul>
+  <div id="activity-options" class="drawer"></div>
+  <ul id="events">
+    {% regroup activity_stream by timestamp.date as event_dates %}
+    {% for event_date in event_dates %}
+    <li class="day">
+      <h3>{{ event_date.grouper|naturalday:"l, F j"|capfirst }}</h3>
+      <ul>
+        {% for event in event_date.list %}
+        <li class="{{ event.type }}">
+          {% if event.type == "transaction" %}
+          {{ event.transaction.customer.get_full_name|default:event.transaction.customer.username }}
+          {% if event.reservations_in %}
+          checked in
+          {{ event.reservations_in.count }}
+          asset{{ event.reservations_in.count|pluralize }}{% if event.reservations_out %},{% endif %}
+          {% endif %}
+          {% if event.reservations_out %}
+          checked out
+          {{ event.reservations_out.count }}
+          asset{{ event.reservations_out.count|pluralize }}
+          {% endif %}
+          <a class="related" href="{{ event.transaction.get_absolute_url }}"></a>
+          {% endif %}
+          {% if event.type == "overdue" %}
+          Asset <a href="{{ event.reservation.asset.get_absolute_url }}">{{ event.reservation.asset }}</a> is overdue
+          <a class="related" href="{{ event.reservation.get_absolute_url }}"></a>
+          {% endif %}
+          {% if event.type == "fine-paid" %}
+          {{ event.fine_payment.customer.get_full_name|default:event.fine_payment.customer.username }} paid
+          <span class="amount">{{ event.fine_payment.amount|dollars }}</span> in fines
+          <a class="related" href="{{ event.fine_payment.get_absolute_url }}"></a>
+          {% endif %}
+          <span class="timestamp">{{ event.timestamp|timesince }} ago</span>
+        </li>
+        {% endfor %}
+      </ul>
+    </li>
+    {% empty %}
+    <li class="empty">No recent activity.</li>
+    {% endfor %}
+  </ul>
+</div>

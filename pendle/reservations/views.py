@@ -28,6 +28,7 @@ def scan(request):
         'customer_form': customer_form,
         'asset_form': asset_form,
         'transaction_key': transaction_key,
+        'media': customer_form.media + asset_form.media,
         }, context_instance=RequestContext(request))
 
 @staff_member_required

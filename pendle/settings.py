@@ -2,8 +2,8 @@ import os.path
 
 SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
+DEFAULT_CATALOG = 1
 AUTH_PROFILE_MODULE = 'institution.Profile'
-TEST_RUNNER = 'noseachievements.djangotest.AchievementsDjangoTestSuiteRunner'
 JOHNNY_MIDDLEWARE_KEY_PREFIX='jc:'
 
 DEBUG = True
@@ -25,9 +25,6 @@ DATABASES = {
         'PORT': '',
     }
 }
-
-if DEBUG:
-    CACHE_BACKEND = 'johnny.backends.memcached://127.0.0.1:11211/'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -59,6 +56,8 @@ MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 # Examples: "http://media.lawrence.com", "http://example.com/media/"
 MEDIA_URL = '/media/'
 
+ADMINBROWSE_MEDIA_URL = '/media/adminbrowse/'
+
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
 # Examples: "http://foo.com/media/", "/media/".
@@ -75,14 +74,14 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'johnny.middleware.LocalStoreClearMiddleware',
-    'johnny.middleware.QueryCacheMiddleware',
+    #'johnny.middleware.LocalStoreClearMiddleware',
+    #'johnny.middleware.QueryCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
+    #'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 
 ROOT_URLCONF = 'pendle.urls'
@@ -98,14 +97,20 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.admin',
+    'django.contrib.humanize',
     #'devserver',
     'debug_toolbar',
-    'johnny',
+    #'johnny',
+    'listinline',
+    'adminbrowse',
     'pendle.utils',
     'pendle.institution',
     'pendle.catalog',
     'pendle.assets',
     'pendle.reservations',
+    'pendle.fines',
+    'pendle.extras',
+    'pendle.dashboard',
 )
 
 DEVSERVER_MODULES = (

@@ -1,5 +1,12 @@
-from django.db.models import Q
+from django.db import models
 
+
+class QuerySetManager(models.Manager):
+    def get_query_set(self):
+        return self.model.QuerySet(self.model)
+        
+    def __getattr__(self, name):
+        return getattr(self.get_query_set(), name)
 
 def search_filter(field_name):
     if field_name.startswith('^'):
@@ -17,11 +24,11 @@ def search_query(terms, fields):
     if isinstance(fields, basestring):
         fields = [fields]
     
-    query = Q()
+    query = models.Q()
     for term in terms:
-        term_query = Q()
+        term_query = models.Q()
         for field in fields:
-            term_query |= Q(**{search_filter(field): term})
+            term_query |= models.Q(**{search_filter(field): term})
         query &= term_query
     return query
 

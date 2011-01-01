@@ -67,3 +67,4 @@ def browse_assets(request, transaction_key):
 
 def lowercase_str(x):
     return unicode(x).lower()
+

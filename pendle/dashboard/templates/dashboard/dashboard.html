@@ -1,0 +1,39 @@
+{% extends "admin/base_site.html" %}
+{% load i18n adminmedia %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/dashboard.css" />
+{% endblock %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% admin_media_prefix %}js/jquery.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/drawer.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/dashboard.js"></script>
+<script type="text/javascript">
+  window.__pendle__ = window.__pendle__ || {};
+  window.__pendle__.activity_options_url = "{% url dashboard:activity-options %}";
+</script>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo; Dashboard
+</div>
+{% endblock %}
+
+{% block content %}
+
+<p class="help catalog">{{ catalog }}</p>
+
+<div class="column">
+  {% include "dashboard/includes/calendar.html" %}
+  {% include "dashboard/includes/assets.html" %}
+  {% include "dashboard/includes/fines.html" %}
+  {% include "dashboard/includes/notes.html" %}
+</div>
+<div class="column">
+  {% include "dashboard/includes/activity.html" %}
+</div>
+
+{% endblock %}

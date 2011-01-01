@@ -1,9 +1,13 @@
+# -*- coding: utf-8 -*-
 from datetime import datetime
 
 from django.db import models
+from django.db.models import permalink, Q
+from django.db.models.query import QuerySet
+from django.contrib.auth.models import User
 
-from pendle.catalog.models import (FinePolicy, ReservationDuration,
-                                   Requirements, Catalog)
+from pendle.catalog.models import FinePolicy, ReservationDuration, \
+                                  Requirements, Catalog
 from pendle.utils.text import truncate
 
 
@@ -16,6 +20,9 @@ class ProductType(models.Model):
     def __unicode__(self):
         return self.name
 
+    @permalink
+    def get_absolute_url(self):
+        return ('admin:assets_producttype_change', [self.pk])
 
 class PolicyCategory(models.Model):
     name = models.CharField(max_length=75, unique=True)
@@ -39,6 +46,9 @@ class PolicyCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+    @permalink
+    def get_absolute_url(self):
+        return ('admin:assets_policycategory_change', [self.pk])
 
 class Manufacturer(models.Model):
     name = models.CharField(max_length=75, unique=True)
@@ -52,6 +62,13 @@ class Manufacturer(models.Model):
     def __unicode__(self):
         return self.name
 
+    @permalink
+    def get_absolute_url(self):
+        return ('admin:assets_manufacturer_change', [self.pk])
+
+    @property
+    def assets(self):
+        return Asset.objects.filter(product__manufacturer=self)
 
 class Product(models.Model):
     manufacturer = models.ForeignKey(Manufacturer, null=True, blank=True,
@@ -74,10 +91,43 @@ class Product(models.Model):
         unique_together = [('manufacturer', 'title', 'model_name',
                             'model_year')]
         ordering = ['manufacturer', 'title']
-    
+
     def __unicode__(self):
         return truncate(self.title, 75)
 
+    @permalink
+    def get_absolute_url(self):
+        return ('admin:assets_product_change', [self.pk])
+
+class AssetManager(models.Manager):
+    def checked_out(self, *args, **kwargs):
+        kwargs.update(reservations__transaction_out__isnull=False,
+                      reservations__transaction_in__isnull=True)
+        return self.filter(*args, **kwargs).distinct()
+    
+    def checked_in(self, *args, **kwargs):
+        return self.filter(
+            Q(reservations__isnull=True) |
+            ~Q(reservations__transaction_in__isnull=True),
+            *args, **kwargs).distinct()
+
+    def overdue(self, now=None, *args, **kwargs):
+        if now is None:
+            now = datetime.now()
+        kwargs.update(reservations__due_date__lt=now)
+        return self.checked_out(*args, **kwargs)
+
+    def available(self, *args, **kwargs):
+        kwargs.update(reservable=True, catalog__online=True)
+        return self.checked_in(*args, **kwargs)
+
+    def unavailable(self, *args, **kwargs):
+        checked_out = Q(reservations__transaction_out__isnull=False,
+                        reservations__transaction_in__isnull=True)
+        offline = Q(catalog__online=False)
+        unreservable = Q(reservable=False)
+        return self.filter(checked_out | offline | unreservable, *args,
+            **kwargs).distinct()
 
 class Asset(models.Model):
     CONDITION_CHOICES = (('unopened', "Unopened"),
@@ -86,10 +136,11 @@ class Asset(models.Model):
                          ('unreliable', "Unreliable"),
                          ('needs_service', "Needs service"),
                          ('destroyed', "Destroyed"))
-    catalog = models.ForeignKey(Catalog, related_name='assets', default=1)
+    catalog = models.ForeignKey(Catalog, related_name='assets',
+                                default=Catalog.objects.get_or_default)
     product = models.ForeignKey(Product, related_name='assets')
     bundle = models.ForeignKey('self', null=True, blank=True,
-        related_name='bundle_assets',
+        related_name='bundled_assets',
         help_text="The bundle in which this asset is included.")
     bundle_order = models.IntegerField(blank=True, null=True)
     barcode = models.CharField(max_length=75)
@@ -129,7 +180,7 @@ class Asset(models.Model):
     reservable = models.BooleanField(default=True,
         help_text="Uncheck to make this asset unavailable.")
 
-    #objects = QuerySetManager()
+    objects = AssetManager()
 
     class Meta:
         unique_together = [('catalog', 'barcode')]
@@ -139,7 +190,37 @@ class Asset(models.Model):
     def __unicode__(self):
         return self.barcode
 
-    @models.permalink
+    @permalink
     def get_absolute_url(self):
-        return ('admin:assets_asset_change', [self.id])
+        return ('admin:assets_asset_change', [self.pk])
+
+    def is_checked_out(self):
+        return self.__class__.objects.checked_out(pk=self.pk).exists()
+    is_checked_out.boolean = True
+    is_checked_out.short_description = "checked out?"
+
+    def is_overdue(self):
+        return self.__class__.objects.overdue(pk=self.pk).exists()
+    is_overdue.boolean = True
+    is_overdue.short_description = "overdue?"
+
+    def is_available(self):
+        return self.__class__.objects.available(pk=self.pk).exists()
+    is_available.boolean = True
+    is_available.short_description = "available?"
+    
+    def get_current_customer(self):
+        try:
+            return User.objects.get(
+                transactions__reservations_out__asset=self,
+                transactions__reservations_out__transaction_in__isnull=True)
+        except User.DoesNotExist:
+            return None
+    get_current_customer.short_description = u"checked out by…"
+
+    def get_current_reservation(self):
+        try:
+            return self.reservations.get(transaction_in__isnull=True)
+        except self.reservations.model.DoesNotExist:
+            return None
 

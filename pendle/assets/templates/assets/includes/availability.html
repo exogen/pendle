@@ -1,0 +1,9 @@
+{% load adminmedia %}
+<span class="availability {{ available|yesno:"available,unavailable" }}">
+<img src="{% admin_media_prefix %}img/admin/icon-{{ available|yesno:"yes,no" }}.gif"/>
+{% if available %}Available for checkout{% else %}
+{% if reservation %}Checked out by {{ current_customer }}{% else %}
+{% if not asset.reservable %}Marked as unreservable{% else %}
+{% if not asset.catalog.online %}Catalog is offline{% endif %}
+{% endif %}{% endif %}{% endif %}
+</span>

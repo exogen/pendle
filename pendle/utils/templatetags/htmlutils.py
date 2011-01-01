@@ -6,6 +6,6 @@ from django import template
 register = template.Library()
 
 @register.filter
-def urldata(value):
+def urlparams(value):
     return urlencode(value)
 

@@ -9,16 +9,13 @@ from pendle.utils import current_year
 
 
 log = logging.getLogger(__name__)
-UID = __name__
 
-def user_label(user, template="%(name)s (%(username)s)", allow_tags=False):
-    label = template % {'name': user.get_full_name(),
-                        'first': user.first_name,
-                        'last': user.last_name,
-                        'username': user.username}
-    if allow_tags:
-        label = mark_safe(label)
-    return label
+def user_label(user):
+    name = user.get_full_name()
+    if name:
+        return "%s (%s)" % (name, user.username)
+    else:
+        return user.username
 
 User.__unicode__ = user_label
 User._meta.ordering = ('last_name', 'first_name')
@@ -120,5 +117,5 @@ def create_profile(sender, instance, created, **kwargs):
     if created:
         profile, created = Profile.objects.get_or_create(user=instance)
 
-signals.post_save.connect(create_profile, sender=User, dispatch_uid=UID)
+signals.post_save.connect(create_profile, sender=User)
 

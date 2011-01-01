@@ -1,0 +1,10 @@
+{% with object.checked_out_by as user %}
+{% if user %}
+<span class="change-link">
+  <a href="{% url admin:auth_user_change user.pk %}" title="Go to user"></a>
+  {{ user }}
+</span>
+{% else %}
+<span class="quiet">Nobody</span>
+{% endif %}
+{% endwith %}

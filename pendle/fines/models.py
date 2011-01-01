@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, permalink
 from django.contrib.admin.models import User
 
 from reservations.models import Reservation
@@ -30,9 +30,14 @@ class Fine(models.Model):
     def __unicode__(self):
         return "%s fined %s" % (self.customer, format_dollars(self.amount))
 
+    @permalink
+    def get_absolute_url(self):
+        return ('admin:fines_fine_change', [self.pk])
+
 class FinePayment(models.Model):
     customer = models.ForeignKey(User, related_name='fine_payments')
-    amount = models.DecimalField(max_digits=6, decimal_places=2)
+    amount = models.DecimalField(max_digits=6, decimal_places=2,
+        help_text="The amount received in this transaction.")
     notes = models.TextField(blank=True)
     date_received = models.DateTimeField(default=datetime.now)
     staff_member = models.ForeignKey(User, verbose_name="received by",
@@ -44,4 +49,8 @@ class FinePayment(models.Model):
 
     def __unicode__(self):
         return "%s paid %s" % (self.customer, format_dollars(self.amount))
+
+    @permalink
+    def get_absolute_url(self):
+        return ('admin:fines_finepayment_change', [self.pk])
 

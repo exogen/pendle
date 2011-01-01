@@ -1,24 +1,62 @@
+# -*- coding: utf-8 -*-
 from django.contrib import admin
 from django.contrib.admin.options import InlineModelAdmin
-from django import forms
-from django.utils.encoding import force_unicode
+from django.utils.encoding import force_unicode, smart_unicode
 from django.utils.formats import number_format
+from django.db import models
 
 from listinline import ListInline
+from adminbrowse import (ChangeListColumn, ChangeListTemplateColumn,
+                         link_to_change, link_to_changelist, template_column)
+from adminbrowse.widgets import SelectChangeLinkWidget
 
 from pendle.assets.models import (ProductType, PolicyCategory, Manufacturer,
                                   Product, Asset)
 from pendle.utils import add
-from pendle.utils.urls import admin_url
-from pendle.utils.html import hyperlink, change_link, changelist_link
-from pendle.utils.admin import field_value, related_link, count_link
-from pendle.utils.text import truncate
+from pendle.utils.admin import PendleModelAdmin
 
 
-class ProductTypeAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__', count_link(ProductType, 'products')]
+class BundleColumn(ChangeListColumn):
+    allow_tags = True
+    bundle_link = link_to_change(Asset, 'bundle')
+    bundled_link = link_to_changelist(Asset, 'bundled_assets',
+        text=lambda bundled: "%d bundled" % len(bundled))
 
-    @add(list_display, "assets", allow_tags=True)
+    def __init__(self, short_description, default=""):
+        ChangeListColumn.__init__(self, short_description, 'bundle__barcode')
+        self.default = default
+
+    def __call__(self, obj):
+        if obj.bundle:
+            return self.bundle_link(obj)
+        elif obj.bundled_assets.all():
+            return self.bundled_link(obj)
+        else:
+            return self.default
+
+class AvailabilityColumn(ChangeListTemplateColumn):
+    template_name = "assets/includes/availability.html"
+
+    def get_context(self, obj):
+        context = super(AvailabilityColumn, self).get_context(obj)
+        available = obj.reservable and obj.catalog.online
+        reservation = obj.get_current_reservation()
+        if reservation is None:
+            current_customer = None
+        else:
+            available = False
+            current_customer = reservation.transaction_out.customer
+        context.update({'asset': obj,
+                        'available': available,
+                        'reservation': reservation,
+                        'current_customer': current_customer})
+        return context
+
+class ProductTypeAdmin(PendleModelAdmin):
+    list_display = ['__unicode__',
+                    link_to_changelist(ProductType, 'products')]
+
+    #@add(list_display, "assets", allow_tags=True)
     def list_assets(self, product_type):
         query = {'product__product_type': product_type}
         assets = Asset.objects.filter(**query)
@@ -31,32 +69,17 @@ class ProductTypeAdmin(admin.ModelAdmin):
         else:
             return ""
 
-class PolicyCategoryAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__',
-                    field_value(PolicyCategory, 'fine_policy'),
-                    field_value(PolicyCategory, 'reservation_duration'),
-                    field_value(PolicyCategory, 'requirements'),
-                    count_link(PolicyCategory, 'assets')]
+class PolicyCategoryAdmin(PendleModelAdmin):
+    list_display = ['__unicode__', 'fine_policy', 'reservation_duration',
+                    'requirements', link_to_changelist(PolicyCategory,
+                                                       'assets')]
 
-
-class ManufacturerAdmin(admin.ModelAdmin):
-    list_display = ['__unicode__']
-    list_select_related = True
+class ManufacturerAdmin(PendleModelAdmin):
+    list_display = ['name', 'phone_number', link_to_changelist(Manufacturer,
+                                                               'products')]
     search_fields = ['name', 'url']
 
-    @add(list_display, "URL", allow_tags=True, admin_order_field='url')
-    def list_url(self, manufacturer):
-        if manufacturer.url:
-            return hyperlink(manufacturer.url, manufacturer.url,
-                             {'class': 'external'}, target='_blank',
-                             title="Open URL in a new window")
-        else:
-            return ""
-
-    add(list_display)(field_value(Manufacturer, 'phone_number'))
-    add(list_display)(count_link(Manufacturer, 'products'))
-
-    @add(list_display, "assets", allow_tags=True)
+    #@add(list_display, "assets", allow_tags=True)
     def list_assets(self, manufacturer):
         query = {'product__manufacturer': manufacturer}
         assets = Asset.objects.filter(**query)
@@ -69,31 +92,25 @@ class ManufacturerAdmin(admin.ModelAdmin):
         else:
             return ""
 
-
 class AssetInline(admin.TabularInline):
     model = Asset
     fields = ['barcode', 'condition', 'purchase_date', 'catalog']
     extra = 0
 
-
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(PendleModelAdmin):
+    formfield_overrides = {
+        models.ForeignKey: {'widget': SelectChangeLinkWidget}}
     inlines = [AssetInline]
-    list_display = [related_link(Product, 'manufacturer'),
-                    related_link(Product, 'product_type'), 'model_name',
-                    field_value(Product, 'model_year'),
-                    count_link(Product, 'assets')]
+    list_display = ['title', 'manufacturer', 'product_type', 'model_name',
+                    'model_year', link_to_changelist(Product, 'assets')]
     list_filter = ['date_added', 'product_type']
     search_fields = ['title', 'manufacturer__name', 'description',
                      'model_name']
     ordering = ['-date_added']
+    select_related_fields = ['manufacturer', 'product_type']
     fieldsets = [(None, {'fields': ['manufacturer', 'product_type',
                                     'title', 'description',
                                     ('model_name', 'model_year')]})]
-    
-    @add(list_display, "product", 0, allow_tags=True)
-    def list_product(self, product):
-        return truncate(product, 60)
-
 
 class BundledInline(ListInline):
     model = Asset
@@ -105,19 +122,18 @@ class BundledInline(ListInline):
     can_remove = True
     extra = 0
 
-
-class AssetAdmin(admin.ModelAdmin):
+class AssetAdmin(PendleModelAdmin):
     inlines = [BundledInline]
-    list_display = ['barcode', related_link(Asset, 'product')]
+    list_display = ['barcode', 'product', BundleColumn("bundle"),
+                    AvailabilityColumn("available?")]
     list_filter = ['catalog', 'date_added', 'policy_category', 'condition',
                    'new_barcode']
-    list_select_related = True
     search_fields = ['barcode', 'product__manufacturer__name',
                      'product__title', 'product__description',
                      'product__model_name', 'product__model_year']
     ordering = ['barcode']
+    select_related_fields = ['catalog', 'product', 'bundle']
     save_as = True
-    save_on_top = True
     fieldsets = [
         (None, {'fields': ('catalog', 'product', ('barcode', 'new_barcode'),
                            'bundle')}),
@@ -133,25 +149,9 @@ class AssetAdmin(admin.ModelAdmin):
             'fields': ('policy_category', 'reservation_duration',
                        'fine_policy', 'requirements', 'reservable')})]
 
-    @add(list_display, "bundle", allow_tags=True,
-         admin_order_field='bundle__barcode')
-    def list_bundle(self, asset):
-        bundled_assets = Asset.objects.filter(bundle=asset).count()
-        if bundled_assets:
-            text = "%s bundled" % number_format(bundled_assets)
-            link = changelist_link(Asset, "", {'bundle': asset},
-                                   title="Find bundled assets")
-            value = '<p class="bundled">%s %s</p>' % (link, text)
-        elif asset.bundle:
-            link = change_link(asset.bundle, title="Go to bundle")
-            value = '<p class="bundle">%s %s</p>' % (link, asset.bundle)
-        else:
-            value = ""
-        return value
-
-
 admin.site.register(ProductType, ProductTypeAdmin)
 admin.site.register(PolicyCategory, PolicyCategoryAdmin)
 admin.site.register(Manufacturer, ManufacturerAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Asset, AssetAdmin)
+

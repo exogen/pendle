@@ -1,145 +1,170 @@
 #branding h1 {
-    background: url('../images/site-logo.png') no-repeat 0 50%;
-    margin-left: 10px;
-    padding-left: 55px;
-    color: #fff;
+  background: url('../images/site-logo.png') no-repeat 0 50%;
+  margin-left: 10px;
+  padding-left: 55px;
+  color: #fff;
 }
 
 #checkout-tools {
-    background: #215670;
-    font-size: 11px;
-    line-height: 2.5;
-    padding: 0 10px;
-    text-align: center;
-    color: #437890;
+  background: #215670;
+  font-size: 11px;
+  line-height: 2.5;
+  padding: 0 10px;
+  text-align: center;
+  color: #437890;
 }
 
 #checkout-tools a {
-    padding-left: 3px;
-    padding-right: 3px;
+  padding-left: 3px;
+  padding-right: 3px;
 }
 
 .form-row.days li {
-    list-style-type: none;
+  list-style-type: none;
 }
 
 .form-row.days li label { float: none; }
 
 .inline-related td.days ul {
-    margin-left: 0;
-    padding-left: 5px;
+  margin-left: 0;
+  padding-left: 5px;
 }
 
 .inline-related td.days li {
-    list-style-type: none;
-    display: inline;
-    margin-right: 10px;
-    white-space: nowrap;
+  list-style-type: none;
+  display: inline;
+  margin-right: 10px;
+  white-space: nowrap;
 }
 
-#changelist a.related {
-    float: right;
-    width: 13px;
-    height: 14px;
-    background: url('../images/link.png') no-repeat 100% 75%;
-    padding-left: 7px;
-    opacity: 0.3;
-}
-
-#changelist p.count a.related,
-#changelist p.bundled a.related {
-    background-image: url('../images/search.png');
-    padding-left: 6px;
-}
-
-a.external {
-    background: url('../images/link-external.png') no-repeat 100% 50%;
-    padding-right: 14px;
-}
-
-#changelist tr:hover a.related {
-    opacity: 0.5;
-}
-
-#changelist a.related:hover {
-    opacity: 0.8 !important;
-}
-
-#changelist a.related:active {
-    opacity: 1.0 !important;
-}
-
-#changelist td p {
-    margin: 0;
-    padding: 0;
-}
-
-#changelist p.count,
-#changelist p.bundle,
-#changelist p.bundled {
-    text-align: right;
-}
-
-#changelist p.bundled {
-    font-weight: bold;
-    padding-right: 1px;
-    color: #999;
-}
-
-#changelist p.bundled img {
-    margin-left: 5px;
-    vertical-align: -1px;
-}
-
-.button,
-input[type='submit'],
-input[type='button'],
-.submit-row input {
-    -moz-border-radius: 2px;
-    -webkit-border-radius: 2px;
+#changelist .bundled {
+  font-weight: bold;
+  color: #999;
 }
 
 #changelist #toolbar form #searchbar {
-    -moz-border-radius: 10px;
-    -webkit-border-radius: 10px;
-    padding-left: 5px !important;
-    padding-right: 5px !important;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  padding-left: 5px !important;
+  padding-right: 5px !important;
 }
 
 .inline-group .aligned .graduation_date label.inline {
-    width: 9em;
+  width: 9em;
 }
 
 #transaction_form .aligned label {
-    width: 10em;
+  width: 10em;
 }
 
 #transaction_form .aligned p,
 #transaction_form .aligned ul {
-    margin-left: 9em;
+  margin-left: 9em;
 }
 
 #fines-group td.notes textarea,
 #fine_payments-group td.notes textarea {
-    width: auto;
-    height: 3em;
+  width: auto;
+  height: 3em;
 }
 
-#changelist p.fine {
-    text-align: right;
-    color: #999;
+#changelist .fines {
+  display: block;
+  color: #999;
+  text-align: right;
 }
 
-#changelist p.fine.due {
-    font-weight: bold;
-    color: #d22;
+#changelist .fines.due {
+  font-weight: bold;
+  color: #d22;
+}
+
+#changelist .availability img {
+  margin-right: 1px;
+  vertical-align: -1px;
+}
+
+#changelist .availability.available {
+  color: #999;
 }
 
 #profile_set-group textarea.vLargeTextField {
-    height: 4.5em;
+  height: 4.5em;
 }
 
+/*
 #transaction_form #reservations_in-group tr.add-row {
-    display: none;
+  display: none;
+}*/
+
+#info-panel {
+  float: right;
+  margin-left: 5px;
+  padding: 0 12px;
+}
+
+#info-panel h2 {
+  margin-top: 0;
+}
+
+#info-panel ul {
+  padding-left: 0;
+  margin-bottom: 14px;
+  color: #ccc;
+}
+
+#info-panel ul li {
+  position: relative;
+  list-style-type: none;
+  margin: 0 0 6px 0;
+  padding: 0 0 0 17px;
+  background: url('../images/bullet.png') no-repeat 4px 5px;
+  color: #666;
+}
+
+#info-panel ul li .count {
+  font-weight: bold;
+}
+
+#summary ul li .availability {
+  font-weight: bold;
+}
+
+#summary ul li .availability.unavailable {
+  color: #d55;
+}
+
+#summary ul li .availability.available {
+  color: #594;
+}
+
+#summary ul li .availability img {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+}
+
+#info-panel ul li a.related {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 13px;
+  height: 14px;
+  background: #fff url('../adminbrowse/images/goto-faded.png') no-repeat 50% 60%;
+}
+
+#info-panel ul li:hover a.related {
+  display: block;
+  background-image: url('../adminbrowse/images/goto-faded.png');
+}
+
+#info-panel ul li a.related:hover {
+  background-image: url('../adminbrowse/images/goto.png') !important;
+}
+
+#info-panel ul li .timestamp {
+  margin-left: 4px;
+  color: #c8c9bc;
 }
 

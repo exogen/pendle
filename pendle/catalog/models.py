@@ -30,7 +30,6 @@ class ReservationDuration(models.Model):
                                    _n("%s", "%ss", self.length) % self.unit,
                                    self.get_due_at_display().lower())
 
-
 class FinePolicy(models.Model):    
     per_day = models.DecimalField("amount per day", max_digits=6,
                                   decimal_places=2, default=0)
@@ -89,11 +88,10 @@ class Requirements(models.Model):
 
 
 class CatalogManager(models.Manager):
-    def get_or_default(self, id=None):
-        if id is None:
-            id = settings.DEFAULT_CATALOG
-        return self.get(id=id)
-
+    def get_or_default(self, pk=None, **kwargs):
+        if pk is None:
+            pk = kwargs.get('id', settings.DEFAULT_CATALOG)
+        return self.get(pk=pk, **kwargs)
 
 class Catalog(models.Model):
     name = models.CharField(max_length=75, unique=True)
@@ -132,8 +130,6 @@ class Period(models.Model):
     days = models.CommaSeparatedIntegerField(max_length=13)
     start_time = models.TimeField()
     end_time = models.TimeField()
-    
-    #objects = QuerySetManager()
     
     class Meta:
         ordering = ['catalog', 'name', 'start_time', 'days']
