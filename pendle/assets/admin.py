@@ -8,7 +8,6 @@ from django.db import models
 from listinline import ListInline
 from adminbrowse import (ChangeListColumn, ChangeListTemplateColumn,
                          link_to_change, link_to_changelist, template_column)
-from adminbrowse.widgets import SelectChangeLinkWidget
 
 from pendle.assets.models import (ProductType, PolicyCategory, Manufacturer,
                                   Product, Asset)
@@ -98,8 +97,6 @@ class AssetInline(admin.TabularInline):
     extra = 0
 
 class ProductAdmin(PendleModelAdmin):
-    formfield_overrides = {
-        models.ForeignKey: {'widget': SelectChangeLinkWidget}}
     inlines = [AssetInline]
     list_display = ['title', 'manufacturer', 'product_type', 'model_name',
                     'model_year', link_to_changelist(Product, 'assets')]

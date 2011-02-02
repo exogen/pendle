@@ -1,0 +1,22 @@
+<form id="add-customer-form" method="POST" action="{% url institution:scan-customer-add transaction_key %}"
+      data-bind="submit: add">
+  <h1>New customer</h1>
+  <p class="help">
+    This customer doesn't appear to be in the system yet. Add the customer
+    or try another ID number to continue.
+  </p>
+  {% for field in profile_form %}
+  <div class="field">
+    {{ field.label_tag }} {{ field }}
+  </div>
+  {% endfor %}
+  {% for field in customer_form %}
+  <div class="field">
+    {{ field.label_tag }} {{ field }}
+  </div>
+  {% endfor %}
+  <div class="submit-row">
+    {% csrf_token %}
+    <input type="submit" class="default" value="Add customer"/>
+  </div>
+</form>

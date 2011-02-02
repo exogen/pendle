@@ -2,7 +2,7 @@
 {% load availability %}
 
 {% block object-tools %}
-{% if not add %}
+{% if change %}
 <div id="info-panel">
   <div id="summary">
     <h2>Summary</h2>
@@ -10,18 +10,22 @@
       <li>{% show_availability original %}</li>
       {% with original.reservations.count as checkout_count %}
       <li>Checked out <span class="count">{{ checkout_count }}</span>
-          time{{ checkout_count|pluralize }} overall <a href="" class="related"></a></li>
+        time{{ checkout_count|pluralize }} overall
+        <a href="{% url admin:reservations_transaction_changelist %}?reservations_out__asset={{ original.pk|urlencode }}" class="related"></a>
+      </li>
       {% endwith %}
       {% if original.bundle %}
       {% with original.bundle.bundled_assets.count as bundled_count %}
       <li>Bundled with <span class="count">{{ bundled_count }}</span> other
-        asset{{ bundled_count|pluralize }} <a href="" class="related"></a></li>
+        asset{{ bundled_count|pluralize }}
+        <a href="{% url admin:assets_asset_changelist %}?bundle={{ original.bundle.pk|urlencode }}" class="related"></a></li>
       {% endwith %}
       {% else %}
       {% with original.bundled_assets.count as bundled_count %}
       {% if bundled_count %}
       <li>Bundled with <span class="count">{{ bundled_count }}</span> other
-        asset{{ bundled_count|pluralize }} <a href="" class="related"></a></li>
+        asset{{ bundled_count|pluralize }}
+        <a href="{% url admin:assets_asset_changelist %}?bundle={{ original.pk|urlencode }}" class="related"></a></li>
       {% else %}
       <li>Bundled with no other assets</li>
       {% endif %}
@@ -31,6 +35,8 @@
   </div>
   <div id="activity">
     <h2>Activity</h2>
+    Coming soon...
+    <!--
     <ul class="events">
       <li>Checked in by Brian Beck <a href="" class="related"></a>
         <span class="timestamp">yesterday at 5 p.m.</span></li>
@@ -41,6 +47,7 @@
       <li>Added by Marc Tomko <a href="" class="related"></a>
         <span class="timestamp"></span></li>
     </ul>
+    -->
   </div>
 </div>
 {% endif %}

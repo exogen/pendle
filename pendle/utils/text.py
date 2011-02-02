@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.utils.encoding import force_unicode
+from django.utils.formats import number_format
 
 
 def truncate(text, max_length, tail=u'…'):
@@ -9,6 +10,12 @@ def truncate(text, max_length, tail=u'…'):
     return text
 
 def format_dollars(n):
-    return "%s$%0.*f" % ('-' if n < 0 else '',
-                         0 if int(n) == n else 2, abs(n))
+    text = number_format(n, 2)
+    if text.endswith('.00'):
+        text = text[:-3]
+    if text.startswith('-'):
+        text = '-$' + text[1:]
+    else:
+        text = '$' + text
+    return text
 

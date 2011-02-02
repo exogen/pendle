@@ -1,0 +1,72 @@
+{% extends "admin/base_site.html" %}
+{% load i18n markup %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/receipt.css"/>
+<link rel="stylesheet" type="text/css" media="print" href="{{ MEDIA_URL }}css/receipt-print.css"/>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="../../../../">{% trans "Home" %}</a> &rsaquo;
+  <a href="../../../">{% trans "Reservations" %}</a> &rsaquo;
+  <a href="../../">{% trans "Transactions" %}</a> &rsaquo;
+  <a href="../">{{ transaction }}</a> &rsaquo; Receipt
+</div>
+{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block content %}
+
+<div class="submit-row">
+  <input type="submit" class="default" value="Print" onclick="window.print();"/>
+  <h1>{{ title }}</h1>
+</div>
+
+<div class="receipt">
+  <h1>{{ transaction }}</h1>
+  <div class="subtitle">
+    <span class="timestamp">{{ transaction.timestamp }}</span>
+    <span class="catalog">{{ catalog }}</span>
+  </div>
+  {% if catalog.receipt_prologue %}
+  <div class="prologue">{{ catalog.receipt_prologue|markdown }}</div>
+  {% endif %}
+  <dl>
+    <dt>Customer</dt><dd>{{ transaction.customer }}</dd>
+    <dt>Staff member</dt><dd>{{ transaction.staff_member }}</dd>
+  </dl>
+  <h2>Checked in: <span class="count">{{ transaction.reservations_in.count }}</span></h2>
+  <ul class="in">
+    {% for reservation in transaction.reservations_in.all %}
+    <li>
+      <span class="barcode">{{ reservation.asset }}</span>
+      <span class="product">{{ reservation.asset.product }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <h2>Checked out: <span class="count">{{ transaction.reservations_out.count }}</span></h2>
+  <ul class="out">
+    {% for reservation in transaction.reservations_out.all %}
+    <li>
+      {% if reservation.due_date %}
+      <span class="due">Due by <span class="timestamp">{{ reservation.due_date }}</span></span>
+      {% else %}
+      <span class="due empty">Due date not specified</span>
+      {% endif %}
+      <span class="barcode">{{ reservation.asset }}</span>
+      <span class="product">{{ reservation.asset.product }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% if catalog.receipt_epilogue %}
+  <div class="epilogue">{{ catalog.receipt_epilogue|markdown }}</div>
+  {% endif %}
+  {% if catalog.receipt_signature %}
+  <div class="signature">
+    <h2>Signature</h2>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

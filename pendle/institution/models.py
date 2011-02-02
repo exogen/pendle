@@ -35,8 +35,6 @@ class Profile(models.Model):
                                             choices=YEAR_CHOICES)
     graduation_date = models.DateField(null=True, blank=True)
     staff_notes = models.TextField(blank=True)
-    picture = models.ImageField(upload_to='pictures/profiles', null=True,
-                                blank=True)
     signed_agreement = models.BooleanField(default=False,
         help_text="User has signed the equipment agreement form.")
 

@@ -25,7 +25,7 @@ class ProfileInline(admin.StackedInline):
     fieldsets = [
         (None, {'fields': ('id_number', 'phone_number', 'address',
                            ('year', 'graduation_date'), 'staff_notes',
-                           'picture', 'signed_agreement')})]
+                           'signed_agreement')})]
 
 class FineInline(admin.TabularInline):
     model = Fine

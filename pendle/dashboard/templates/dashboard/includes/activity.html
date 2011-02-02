@@ -1,11 +1,13 @@
 {% load humanize textutils %}
 <div id="activity" class="section">
   <h2>Recent activity</h2>
+  <!--
   <ul class="actions">
     <li>
       <a href="#" id="activity-options-toggle">Customize activity feed</a>
     </li>
   </ul>
+  -->
   <div id="activity-options" class="drawer"></div>
   <ul id="events">
     {% regroup activity_stream by timestamp.date as event_dates %}

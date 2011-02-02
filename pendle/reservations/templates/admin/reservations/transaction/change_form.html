@@ -1,0 +1,10 @@
+{% extends "admin/change_form.html" %}
+
+{% block object-tools %}
+{% if change and not is_popup %}
+<ul class="object-tools">
+  <li><a href="receipt/" class="receiptlink">Receipt</a></li>
+  <li><a href="history/" class="historylink">History</a></li>
+</ul>
+{% endif %}
+{% endblock %}

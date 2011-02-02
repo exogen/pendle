@@ -194,6 +194,22 @@ class Asset(models.Model):
     def get_absolute_url(self):
         return ('admin:assets_asset_change', [self.pk])
 
+    def get_reservation_duration(self):
+        if self.reservation_duration:
+            return self.reservation_duration
+        elif self.policy_category and self.policy_category.reservation_duration:
+            return self.policy_category.reservation_duration
+        else:
+            return self.catalog.default_reservation_duration
+
+    def get_fine_policy(self):
+        if self.fine_policy:
+            return self.fine_policy
+        elif self.policy_category and self.policy_category.fine_policy:
+            return self.policy_category.fine_policy
+        else:
+            return self.catalog.default_fine_policy
+
     def is_checked_out(self):
         return self.__class__.objects.checked_out(pk=self.pk).exists()
     is_checked_out.boolean = True

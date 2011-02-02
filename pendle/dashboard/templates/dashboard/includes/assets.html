@@ -9,7 +9,7 @@
   <ul class="summary">
     <li>
       {% if assets %}
-      <a href="{% url admin:assets_asset_changelist %}?catalog__id__exact={{ catalog.pk }}">
+      <a href="{% url admin:assets_asset_changelist %}?catalog__id__exact={{ catalog.pk|urlencode }}">
         {{ assets.count }} asset{{ assets.count|pluralize }}
       </a>
       {% else %}
@@ -19,7 +19,7 @@
     </li>
     <li>
       {% if reservations_out %}
-      <a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.pk }}&transaction_in__isnull=1">
+      <a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.pk|urlencode }}&transaction_in__isnull=1">
         {{ reservations_out.count }} asset{{ reservations_out.count|pluralize }}
       </a>
       {% else %}
@@ -29,7 +29,7 @@
     </li>
     <li>
       {% if reservations_overdue %}
-      <a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.pk }}&transaction_in__isnull=1&due_date__lte={{ now|urlencode }}&ot=asc&o=5">
+      <a href="{% url admin:reservations_reservation_changelist %}?asset__catalog={{ catalog.pk|urlencode }}&transaction_in__isnull=1&due_date__lte={{ now|urlencode }}&ot=asc&o=5">
         {{ reservations_overdue.count }} asset{{ reservations_overdue.count|pluralize }}
       </a>
       {% else %}

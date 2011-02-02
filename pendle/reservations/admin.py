@@ -133,7 +133,8 @@ class ReservationCustomerLink(ChangeLink):
         return super(ReservationCustomerLink, self).__call__(obj)
 
 class ReservationAdmin(PendleModelAdmin):
-    list_display = ['asset', ReservationCustomerLink(Transaction, 'customer'),
+    list_display = ['__unicode__', 'asset',
+                    ReservationCustomerLink(Transaction, 'customer'),
                     link_to_change(Reservation, 'transaction_out'),
                     link_to_change(Reservation, 'transaction_in'), 'due_date',
                     'is_on_time']

@@ -20,7 +20,7 @@
         <td>{{ fine.customer }}</td>
         <td class="amount">{{ fine.amount|dollars }}</td>
         <td>
-          <a href="{% url admin:fines_finepayment_add %}?customer={{ fine.customer.id }}&amount={{ fine.amount }}">Pay</a>
+          <a href="{% url admin:fines_finepayment_add %}?customer={{ fine.customer.id|urlencode }}&amount={{ fine.amount|urlencode }}">Pay</a>
         </td>
       </tr>
       {% endfor %}

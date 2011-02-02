@@ -1,8 +1,10 @@
 import calendar
+from datetime import datetime, timedelta
 
 from django.db import models
 from django.conf import settings
 from django.utils.translation import ungettext as _n
+from dateutil.rrule import WEEKLY, rrule, rruleset
 
 from pendle.institution.models import Department, Course, Training
 from pendle.utils.text import format_dollars
@@ -29,6 +31,32 @@ class ReservationDuration(models.Model):
         return u"%d %s (at %s)" % (self.length,
                                    _n("%s", "%ss", self.length) % self.unit,
                                    self.get_due_at_display().lower())
+
+    def get_due_date(self, now=None, periods=None):
+        if now is None:
+            now = datetime.now()
+        if self.unit == 'hour':
+            delta = timedelta(hours=self.length)
+        elif self.unit == 'day':
+            delta = timedelta(days=self.length)
+        else:
+            delta = None
+
+        if self.due_at == 'period_end':
+            start_date = now
+            if delta:
+                start_date += delta
+            end_dates = rruleset()
+            for period in periods:
+                end_dates.rrule(period.get_end_timestamps(start_date))
+
+            if self.unit == 'hour' or self.unit == 'day':
+                return end_dates[0]
+            elif self.unit == 'period':
+                return end_dates[self.length]
+        else:
+            if self.unit == 'hour' or self.unit == 'day':
+                return now + delta
 
 class FinePolicy(models.Model):    
     per_day = models.DecimalField("amount per day", max_digits=6,
@@ -161,4 +189,24 @@ class Period(models.Model):
 
     def get_days(self):
         return sorted(set(int(d) for d in self.days.split(',')))
+
+    def get_start_timestamps(self, start_date=None):
+        if start_date is None:
+            start_date = datetime.now()
+        weekdays = self.get_days()
+        hour = self.start_time.hour
+        minute = self.start_time.minute
+        start_rrule = rrule(WEEKLY, dtstart=start_date, byweekday=weekdays,
+                            byhour=hour, byminute=minute, bysecond=0)
+        return start_rrule
+
+    def get_end_timestamps(self, start_date=None):
+        if start_date is None:
+            start_date = datetime.now()
+        weekdays = self.get_days()
+        hour = self.end_time.hour
+        minute = self.end_time.minute
+        end_rrule = rrule(WEEKLY, dtstart=start_date, byweekday=weekdays,
+                          byhour=hour, byminute=minute, bysecond=0)
+        return end_rrule
 

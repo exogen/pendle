@@ -1,0 +1,118 @@
+body {
+    background: #ddd;
+}
+
+.submit-row {
+    width: 520px;
+    margin: 20px auto;
+}
+
+.submit-row input.default {
+    margin-top: 0;
+}
+
+.receipt {
+    width: 480px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #fff;
+	box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+	-webkit-box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+	-moz-box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.5);
+}
+
+.receipt h1 {
+    color: #333;
+    line-height: 28px;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 5px;
+}
+
+.receipt .subtitle {
+    font-size: 11px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.receipt .prologue,
+.receipt .epilogue {
+    margin: 15px 0;
+}
+
+.receipt .prologue p,
+.receipt .epilogue p {
+    line-height: 18px;
+}
+
+.receipt .subtitle .timestamp {
+    float: right;
+}
+
+.receipt h2,
+.receipt dt {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #888;
+}
+
+.receipt h2 .count {
+    color: #333;
+}
+
+.receipt dt {
+    float: left;
+    clear: left;
+    width: 10em;
+    margin: 0 0 5px 0;
+}
+
+.receipt dd {
+    font-size: 12px;
+    margin: 0 0 5px 0;
+}
+
+.receipt .signature {
+    height: 30pt;
+    border: 1px solid #ccc;
+    border-bottom-color: #000;
+    padding: 5px;
+}
+
+.receipt .signature h2 {
+    margin-top: 0;
+}
+
+.receipt ul {
+    padding: 0;
+}
+
+.receipt li {
+    list-style-type: none;
+    padding: 5px;
+    border-bottom: 1px solid #ddd;
+}
+
+.receipt li.empty {
+    color: #999;
+    border-bottom: 0;
+}
+
+.receipt li .barcode {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+.receipt li .product {
+    color: #666;
+}
+
+.receipt li .due {
+    float: right;
+    color: #666;
+}
+
+.receipt li .due .timestamp {
+    font-weight: bold;
+    color: #000;
+}
+

@@ -120,11 +120,10 @@ def get_fines_due():
     fines_due = []
     for fine in fines:
         customer_id = fine['customer']
-        amount = fine['total']
-        if customer_id in customer_payments:
-            amount -= customer_payments[customer_id]
-        fines_due.append({'customer': User.objects.get(pk=customer_id),
-                          'amount': amount})
+        amount = fine['total'] - customer_payments.get(customer_id, 0)
+        if amount > 0:
+            fines_due.append({'customer': User.objects.get(pk=customer_id),
+                              'amount': amount})
     return sorted(fines_due, key=itemgetter('amount'), reverse=True)
 
 @staff_member_required

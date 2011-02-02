@@ -1,0 +1,36 @@
+#body {
+    background: #fff;
+}
+
+#header,
+.breadcrumbs,
+.submit-row {
+    display: none;
+}
+
+.receipt {
+    font-size: 8pt;
+    border: 1px solid #999;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+}
+
+.receipt h1 {
+    font-size: 10pt;
+}
+
+.receipt h2,
+.receipt dt,
+.receipt dd {
+    font-size: 9pt;
+}
+
+.receipt h2,
+.receipt dt {
+    color: #666;
+}
+
+.receipt li {
+    font-size: 8pt;
+}

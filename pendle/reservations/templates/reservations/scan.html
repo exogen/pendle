@@ -8,8 +8,118 @@
 
 {% block extrahead %}{{ block.super }}
 <script type="text/javascript" src="{% admin_media_prefix %}js/jquery.min.js"></script>
-<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery-ui-1.8.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/jquery.tmpl.min.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/knockout-1.1.2.js"></script>
+<script type="text/javascript" src="{{ MEDIA_URL }}js/model.js"></script>
 {{ media }}
+
+<script id="message-template" type="text/html">
+  {% templatetag openbrace %}{html $data }}
+</script>
+<script id="customer-result-template" type="text/html">
+  <div class="header">
+    <h3 data-bind="text: displayName"></h3>
+    <h4 data-bind="visible: departments.length, text: departments"></h4>
+  </div>
+  <dl class="details">
+    <dt>Assets</dt>
+    <dd class="assets" data-bind="visible: !reservations.length">None</dd>
+    </dd>
+    <dd class="assets" data-bind="visible: reservations.length">
+      <ul class="reservations" data-bind="template: {foreach: reservations, name: templates.reservation}"></ul>
+    </dd>
+    <dt>Fines</dt>
+    <dd class="fines">
+      <span data-bind="visible: !fines">None</span>
+      <span class="due" data-bind="visible: fines">
+        &#36;<span class="amount" data-bind="text: fines"></span>
+      </span>
+    </dd>
+    <dt>Notes</dt>
+    <dd class="notes">None</dd>
+  </dl>
+</script>
+<script id="reservation-bundled-asset-template" type="text/html">
+  {% templatetag openbrace %}{if reservation }}
+  <li data-bind="css: {confirmed: confirmed, overdue: reservation.overdue}">
+    <label><input type="checkbox" class="check-confirm" data-bind="checked: confirmed"/>
+      <span class="barcode" data-bind="text: fields.barcode,
+        tooltip: reservation.overdue ? 'Asset is overdue' : ''"></span></label>
+    <span class="product" data-bind="text: title, tooltip: title"></span>
+  </li>
+  {% templatetag openbrace %}{/if}}
+</script>
+<script id="customer-reservation-template" type="text/html">
+  {% templatetag openbrace %}{if !asset.bundle || !transaction.customer.assets[asset.bundle.pk] }}
+  <li data-bind="css: {confirmed: asset.confirmed, overdue: overdue}">
+    <label><input type="checkbox" class="check-confirm" data-bind="checked: asset.confirmed"/>
+      <span class="barcode" data-bind="text: asset.fields.barcode,
+        tooltip: overdue ? 'Asset is overdue' : ''"></span></label>
+    <span class="product" data-bind="text: asset.title, tooltip: asset.title"></span>
+    {% templatetag openbrace %}{if asset.bundled && asset.bundled.length}}
+    <ul class="reservations bundled" data-bind="template: {foreach: asset.bundled, name: 'reservation-bundled-asset-template'}"></ul>
+    {% templatetag openbrace %}{/if}}
+  </li>
+  {% templatetag openbrace %}{/if}}
+</script>
+<script id="asset-result-template" type="text/html">
+  <div class="header">
+    <h3 data-bind="text: title"></h3>
+    <h4 data-bind="visible: product.manufacturer, text: product.manufacturer"></h4>
+  </div>
+  <dl class="details">
+    <dt>Status</dt>
+    <dd class="availability">
+      <span class="available" data-bind="visible: !reservation">Available</span>
+      <span class="unavailable" data-bind="visible: reservation, template: {data: reservation, name: templates.reservation}"></span>
+    </dd>
+    <dt>Condition</dt>
+    <dd class="condition" data-bind="text: condition"></dd>
+    <dd class="condition-details" data-bind="visible: fields.condition_details, text: fields.condition_details"></dd>
+    <dt>Notes</dt>
+    <dd class="notes" data-bind="text: fields.staff_notes || 'None'"></dd>
+  </dl>
+</script>
+<script id="asset-reservation-template" type="text/html">
+  Checked out by <span class="customer" data-bind="text: transaction.customer"></span>
+</script>
+<script id="transaction-asset-template" type="text/html">
+  {% templatetag openbrace %}{if !bundle || !bundle.confirmed()}}
+  <li>
+    <label>
+      {% templatetag openbrace %}{if reservation}}
+      <input type="checkbox" name="asset_in" class="check-confirm" data-bind="value: pk, checked: confirmed"/>
+      {% templatetag openbrace %}{else}}
+      <input type="checkbox" name="asset_out" class="check-confirm" data-bind="value: pk, checked: confirmed"/>
+      {% templatetag openbrace %}{/if}}
+      <span class="barcode" data-bind="text: fields.barcode"></span>
+    </label>
+    {% templatetag openbrace %}{if bundled && bundled.length}}
+    <span class="bundled"><span class="count" data-bind="text: bundled.length"></span> bundled</span>
+    {% templatetag openbrace %}{/if}}
+    <p class="product" data-bind="text: title"></p>
+    {% templatetag openbrace %}{if bundled && bundled.length}}
+    <ul class="assets bundled" data-bind="template: {foreach: bundled, name: 'transaction-bundled-asset-template'}"></ul>
+    {% templatetag openbrace %}{/if}}
+  </li>
+  {% templatetag openbrace %}{/if}}
+</script>
+<script id="transaction-bundled-asset-template" type="text/html">
+  <li>
+    {% templatetag openbrace %}{if !(bundleSynced()) && bundle.reservation}}
+    <p class="warning">Bundled asset is out of sync: not checked out with bundle.</p>
+    {% templatetag openbrace %}{/if}}
+    <label>
+      {% templatetag openbrace %}{if reservation}}
+      <input type="checkbox" name="asset_in" class="check-confirm" data-bind="value: pk, checked: confirmed, disable: !bundleSynced()"/>
+      {% templatetag openbrace %}{else}}
+      <input type="checkbox" name="asset_out" class="check-confirm" data-bind="value: pk, checked: confirmed, disable: !bundleSynced()"/>
+      {% templatetag openbrace %}{/if}}
+      <span class="barcode" data-bind="text: fields.barcode"></span>
+      <span class="product" data-bind="text: title"></span>
+    </label>
+  </li>
+</script>
 {% endblock %}
 
 {% block breadcrumbs %}
@@ -24,40 +134,57 @@
 
 <div id="scan-customer" class="scan">
   <h2>Customer</h2>
-  <form id="customer-form" method="POST" action="{% url institution:scan-customer transaction_key %}">
+  <form id="customer-form" method="POST" action="{% url institution:scan-customer transaction_key %}"
+	      data-bind="submit: load, css: {loading: loading}">
     <p class="help">{{ customer_form.query.help_text }}</p>
     {% spaceless %}
-    <div>
-      {{ customer_form.query }}
-      <button id="customer-browse" class="browse" type="button" title="Browse users"></button>
-    </div>
+    <div>{{ customer_form.query }}</div>
     {% csrf_token %}
     {% endspaceless %}
   </form>
-  <div id="customer-browser" class="browse"></div>
+  <div class="message" data-bind="visible: message"></div>
+  <div id="customer" class="result"
+       data-bind="visible: result, template: {data: result, name: templates.result}"></div>
 </div>
+
 <div id="scan-asset" class="scan">
   <h2>Add asset</h2>
-  <form id="asset-form" method="POST" action="{% url assets:scan-asset transaction_key %}">
+  <form id="asset-form" method="POST" action="{% url assets:scan-asset transaction_key %}"
+        data-bind="submit: load, css: {loading: loading}">
     <p class="help">{{ asset_form.query.help_text }}</p>
     {% spaceless %}
     <div>
       {{ asset_form.catalog }}
       {{ asset_form.query }}
-      <button id="asset-browse" class="browse" type="button" title="Browse assets"></button>
     </div>
     {% csrf_token %}
     {% endspaceless %}
   </form>
-  <div id="asset-browser" class="browse"></div>
+  <div class="message" data-bind="visible: message, data: message, name: templates.message"></div>
+  <div id="asset" class="result"
+       data-bind="visible: result, template: {data: result, name: templates.result}"></div>
 </div>
-<div id="transaction">
+
+<form id="transaction" action="{% url reservations:new transaction_key %}" method="POST" data-bind="css: {empty: !assetCount(), ready: ready}">
   <h2>Transaction summary</h2>
   <p class="help">Scan items to add them to this transaction.</p>
-  <div id="transaction-assets" class="empty">There are no assets in this transaction.</div>
-  <div class="submit-row">
-    <input type="submit" class="default" value="Complete transaction"/>
+  <div id="transaction-details">
+    <h3 class="inbox"><span class="count" data-bind="text: inbox().length"></span> in</h3>
+    <ul id="inbox" class="assets"
+        data-bind="template: {foreach: inbox, name: templates.asset,
+                              afterAdd: pendle.slideIn, beforeRemove: pendle.slideOut}"></ul>
+    <h3 class="outbox"><span class="count" data-bind="text: outbox().length"></span> out</h3>
+    <ul id="outbox" class="assets"
+        data-bind="template: {foreach: outbox, name: templates.asset,
+                              afterAdd: pendle.slideIn, beforeRemove: pendle.slideOut}"></ul>
   </div>
-</div>
+  <div class="submit-row">
+    {% csrf_token %}
+    <input type="hidden" name="catalog" value="{{ catalog.pk }}"/>
+    <input type="hidden" name="customer" data-bind="value: customerID"/>
+    <label>Staff notes: <input type="text" class="vTextField" name="staff_notes"/></label>
+    <input type="submit" class="default" value="Complete transaction" data-bind="enable: ready"/>
+  </div>
+</form>
 
 {% endblock %}

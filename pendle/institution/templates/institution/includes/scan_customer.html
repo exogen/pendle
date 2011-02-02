@@ -1,5 +1,5 @@
 {% load textutils %}
-<div id="customer" class="result">
+<div id="customer" class="result" data-bind="visible: !browser.open()">
   <div class="header">
     <h3>{{ customer.get_full_name|default:customer.username }}</h3>
     {% if customer.departments.count %}<h4>{{ customer.departments.all|join:"," }}</h4>{% endif %}

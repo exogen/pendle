@@ -6,10 +6,12 @@ from pendle.assets.models import Asset
 
 class ScanAssetForm(forms.Form):
     class Media:
-        js = ('js/drawer.js', 'js/scan.js',)
+        js = ('js/knockout.bindings.js', 'js/scan.js',)
 
     query = forms.CharField(label="Barcode",
-        widget=forms.TextInput(attrs={'class': 'query'}),
+        widget=forms.TextInput(attrs={'class': 'query',
+                                      'spellcheck': 'false', 'autocomplete': 'off',
+                                      'data-bind': "value: query, focused: focused"}),
         help_text="Enter the asset's unique barcode.")
     catalog = forms.ModelChoiceField(queryset=Catalog.objects.all(),
                                      widget=forms.HiddenInput)

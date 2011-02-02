@@ -4,7 +4,6 @@ SITE_ROOT = os.path.dirname(os.path.realpath(__file__))
 
 DEFAULT_CATALOG = 1
 AUTH_PROFILE_MODULE = 'institution.Profile'
-JOHNNY_MIDDLEWARE_KEY_PREFIX='jc:'
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -98,8 +97,9 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.admin',
     'django.contrib.humanize',
+    'django.contrib.markup',
     #'devserver',
-    'debug_toolbar',
+    #'debug_toolbar',
     #'johnny',
     'listinline',
     'adminbrowse',

@@ -81,6 +81,11 @@ class Reservation(models.Model):
     def get_absolute_url(self):
         return ('admin:reservations_reservation_change', [self.pk])
 
+    def is_overdue(self, now=None):
+        return not self.is_on_time(now)
+    is_overdue.boolean = True
+    is_overdue.short_description = "overdue?"
+
     def is_on_time(self, now=None):
         if self.due_date:
             if now is None:
