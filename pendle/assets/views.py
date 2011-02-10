@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import datetime
 
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -35,6 +36,10 @@ def serialize_asset(asset, bundled=False, reservation=False, customer=False):
     objects['assets:product'].update(serialized_product)
 
     result['available'] = asset.is_available()
+    if result['available']:
+        due_date = asset.get_due_date()
+        if due_date:
+            result['due_date'] = due_date.strftime('%m/%d/%Y %I:%M %p')
 
     if bundled:
         bundled = asset.bundled_assets.all().order_by('bundle_order')

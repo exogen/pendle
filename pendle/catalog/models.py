@@ -210,3 +210,10 @@ class Period(models.Model):
                           byhour=hour, byminute=minute, bysecond=0)
         return end_rrule
 
+    def is_during_period(self, timestamp=None):
+        if timestamp is None:
+            timestamp = datetime.now()
+        next_start = self.get_start_timestamps(timestamp).next()
+        next_end = self.get_end_timestamps(timestamp).next()
+        return next_end <= next_start
+

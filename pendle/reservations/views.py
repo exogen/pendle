@@ -29,12 +29,15 @@ def scan(request):
     customer_form = ScanCustomerForm(auto_id='customer-%s')
     asset_form = ScanAssetForm(auto_id='asset-%s',
                                initial={'catalog': catalog.pk})
+    transaction_form = TransactionForm(auto_id='transaction-%s',
+                                       initial={'catalog': catalog.pk})
     transaction_key = generate_transaction_key(request)
     return render_to_response("reservations/scan.html", {
         'title': "New transaction",
         'catalog': catalog,
         'customer_form': customer_form,
         'asset_form': asset_form,
+        'transaction_form': transaction_form,
         'transaction_key': transaction_key,
         'media': customer_form.media + asset_form.media,
         }, context_instance=RequestContext(request))
@@ -62,9 +65,13 @@ def new_transaction(request, transaction_key):
 
             assets_out_ids = request.POST.getlist('asset_out')
             assets_out = Asset.objects.in_bulk(assets_out_ids)
+            custom_due_date = form.cleaned_data['due_date']
             for asset_id, asset in assets_out.iteritems():
-                duration = asset.get_reservation_duration()
-                due_date = duration and duration.get_due_date(now, periods)
+                if custom_due_date:
+                    due_date = custom_due_date
+                else:
+                    duration = asset.get_reservation_duration()
+                    due_date = duration and duration.get_due_date(now, periods)
                 try:
                     transaction.reservations_out.create(asset=asset, due_date=due_date)
                 except Exception:

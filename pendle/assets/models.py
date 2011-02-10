@@ -202,6 +202,14 @@ class Asset(models.Model):
         else:
             return self.catalog.default_reservation_duration
 
+    def get_due_date(self, now=None):
+        if now is None:
+            now = datetime.now()
+        duration = self.get_reservation_duration()
+        if duration:
+            periods = self.catalog.periods.all()
+            return duration.get_due_date(now, periods)
+
     def get_fine_policy(self):
         if self.fine_policy:
             return self.fine_policy

@@ -542,18 +542,28 @@ div.browse ul.filter li a:hover {
 }
 
 #transaction .submit-row label {
-    float: left;
+    font-size: 11px
     font-weight: bold !important;
-    margin-top: 3px;
-    margin-left: 3px;
-    color: #999;
+    color: #aaa;
     text-align: left;
+    text-transform: uppercase;
     text-shadow: #fff 0 1px 0;
+    vertical-align: middle;
 }
 
-#transaction .submit-row input.vTextField {
+#transaction .submit-row input[type=text] {
     background: #fff;
-    margin-top: -2px;
     border: 1px solid #ccc;
-    width: 30em;
+    margin-right: 3px;
+}
+
+#transaction .submit-row a {
+    font-size: 11px;
+    vertical-align: middle;
+}
+
+#transaction .submit-row .due-date {
+    float: left;
+    margin-top: 1px;
+    margin-left: 3px;
 }

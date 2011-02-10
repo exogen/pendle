@@ -139,6 +139,7 @@ class ReservationAdmin(PendleModelAdmin):
                     link_to_change(Reservation, 'transaction_in'), 'due_date',
                     'is_on_time']
     list_filter = ['due_date']
+    ordering = ['transaction_out']
     search_fields = ['asset__barcode', 'asset__product__title',
                      'transaction_out__customer__username',
                      'transaction_out__customer__first_name',

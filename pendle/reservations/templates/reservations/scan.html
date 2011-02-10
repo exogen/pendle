@@ -180,9 +180,17 @@
   </div>
   <div class="submit-row">
     {% csrf_token %}
+    <div class="due-date" data-bind="visible: outbox().length">
+      <a href="#" data-bind="visible: !hasCustomDueDate(), click: toggleDueDate">Customize due date</a>
+      <div class="due-date-field" data-bind="visible: hasCustomDueDate">
+        <label for="transaction-due_date">Due date</label>
+        <input type="text" name="due_date" id="transaction-due_date" size="22" data-bind="value: dueDate"/>
+        <a href="#" data-bind="click: toggleDueDate">Cancel (Use defaults)</a>
+      </div>
+    </div>
+    <input type="hidden" name="staff_notes" value=""/>
     <input type="hidden" name="catalog" value="{{ catalog.pk }}"/>
     <input type="hidden" name="customer" data-bind="value: customerID"/>
-    <label>Staff notes: <input type="text" class="vTextField" name="staff_notes"/></label>
     <input type="submit" class="default" value="Complete transaction" data-bind="enable: ready"/>
   </div>
 </form>

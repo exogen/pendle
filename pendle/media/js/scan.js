@@ -335,6 +335,27 @@ pendle.Transaction = function(customer, asset) {
 			value[i].box(this);
 		}
 	}.bind(this.outbox));
+	this.dueDate = ko.observable();
+	this.hasCustomDueDate = ko.observable(false);
+	this.toggleDueDate = function() {
+		if (this.hasCustomDueDate()) {
+			this.dueDate(null);
+			this.hasCustomDueDate(false);
+		}
+		else {
+			if (!this.dueDate()) {
+				var assets = this.outbox();
+				var dueDate = null;
+				for (var i = 0; i < assets.length; i++) {
+					if (assets[i].due_date) {
+						dueDate = assets[i].due_date;
+					}
+				}
+				this.dueDate(dueDate);
+				this.hasCustomDueDate(true);
+			}
+		}
+	}.bind(this);
 	this.customerID = ko.dependentObservable(function() {
 		var customer = this.customer.result();
 		return customer ? customer.pk : null;
