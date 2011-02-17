@@ -16,6 +16,9 @@ class PendleModelAdmin(AutoBrowseModelAdmin):
         else:
             return queryset
 
+    def lookup_allowed(self, *args, **kwargs):
+        return True
+
 class DollarAmountColumn(ChangeListModelFieldColumn):
     def __call__(self, obj):
         value = getattr(obj, self.field_name)
