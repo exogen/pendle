@@ -4,8 +4,8 @@ from django.db import models
 from django.db.models import Sum, permalink
 from django.contrib.admin.models import User
 
-from reservations.models import Reservation
-from utils.text import format_dollars
+from pendle.reservations.models import Reservation
+from pendle.utils.text import format_dollars
 
 
 class FineManager(models.Manager):
