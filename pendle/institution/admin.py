@@ -87,11 +87,17 @@ class PendleUserAdmin(UserAdmin):
     list_display += ['email', related_list(User, 'departments'),
                      related_list(User, 'groups'), fines_column("fines")]
 
+    def lookup_allowed(self, *args, **kwargs):
+        return True
+
     class Media:
         css = {'all': ('adminbrowse/css/adminbrowse.css',)}
 
 class PendleGroupAdmin(PendleModelAdmin, GroupAdmin):
     list_display = ['__unicode__', link_to_changelist(Group, 'user_set')]
+
+    def lookup_allowed(self, *args, **kwargs):
+        return True
 
 class DepartmentAdmin(PendleModelAdmin):
     filter_horizontal = ['users']
