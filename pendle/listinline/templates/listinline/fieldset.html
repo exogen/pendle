@@ -12,7 +12,7 @@
         {% else %}
           {{ field.label_tag }}
           {% if field.is_readonly %}
-            <p>{{ field.contents }}</p>
+            <span>{{ field.contents }}</span>
           {% else %}
             {{ field.field }}
           {% endif %}

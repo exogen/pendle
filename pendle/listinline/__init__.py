@@ -19,7 +19,7 @@ class ListInlineModelAdmin(admin.ModelAdmin):
     urls = property(get_urls)
 
 class SearchForm(forms.Form):
-    query = forms.CharField(label="Search", required=False,
+    QUERY = forms.CharField(label="Search", required=False,
                             widget=forms.TextInput(attrs={'class': 'search',
                                                           'size': 40}))
 
@@ -28,7 +28,7 @@ class ListInlineFormset(BaseInlineFormSet):
     can_remove = False
 
     def search_form(self):
-        return SearchForm()
+        return SearchForm(prefix=self.prefix)
 
     def add_fields(self, form, index):
         super(ListInlineFormset, self).add_fields(form, index)
@@ -44,7 +44,8 @@ class ListInline(InlineModelAdmin):
     can_remove = False
     show_labels = True
     media = forms.Media(css={'all': ['listinline/css/list-inline.css']},
-                        js=['listinline/js/jquery-ui-1.8rc3.custom.min.js',
+                        js=['js/jquery-1.5.1.min.js',
+                            'listinline/js/jquery-ui-1.8.12.custom.min.js',
                             'listinline/js/sortable-inline.js'])
 
     def queryset(self, request):

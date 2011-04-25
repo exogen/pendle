@@ -33,7 +33,6 @@
     margin: 2px;
     padding: 5px 8px;
     border: 1px solid #ccc;
-    overflow: auto;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
 }
@@ -51,6 +50,7 @@
     border: 0;
     margin: 0;
     padding: 0;
+    color: #111;
 }
 /*
 .list-inline li.inline-related h3 a {
@@ -84,14 +84,18 @@
 .list-inline li.inline-related fieldset .field {
     float: left;
     margin-left: 20px;
-}
-
-.list-inline li.inline-related fieldset .field p,
-.list-inline li.inline-related fieldset .field label {
     line-height: 20px;
 }
 
-.list-inline li.inline-related fieldset .field p,
+.list-inline li.inline-related fieldset .field label {
+    float: left;
+    margin-right: 5px;
+}
+
+.list-inline li.inline-related fieldset .field span {
+    color: #111;
+}
+
 .list-inline li.inline-related fieldset .field input,
 .list-inline li.inline-related fieldset .field textarea,
 .list-inline li.inline-related fieldset .field select {
