@@ -46,6 +46,8 @@ class ReservationDuration(models.Model):
             start_date = now
             if delta:
                 start_date += delta
+                if self.unit == 'day':
+                    start_date = start_date.date()
             end_dates = rruleset()
             for period in periods:
                 end_dates.rrule(period.get_end_timestamps(start_date))
@@ -53,7 +55,11 @@ class ReservationDuration(models.Model):
             if self.unit == 'hour' or self.unit == 'day':
                 return end_dates[0]
             elif self.unit == 'period':
-                return end_dates[self.length]
+                length = self.length
+                if (self.length > 0 and
+                    not any(period.is_during_period(now) for period in periods)):
+                    length -= 1
+                return end_dates[length]
         else:
             if self.unit == 'hour' or self.unit == 'day':
                 return now + delta
@@ -193,27 +199,22 @@ class Period(models.Model):
     def get_start_timestamps(self, start_date=None):
         if start_date is None:
             start_date = datetime.now()
-        weekdays = self.get_days()
-        hour = self.start_time.hour
-        minute = self.start_time.minute
-        start_rrule = rrule(WEEKLY, dtstart=start_date, byweekday=weekdays,
-                            byhour=hour, byminute=minute, bysecond=0)
-        return start_rrule
+        return self._get_rrule(start_date, self.start_time)
 
     def get_end_timestamps(self, start_date=None):
         if start_date is None:
             start_date = datetime.now()
+        return self._get_rrule(start_date, self.end_time)
+    
+    def _get_rrule(self, start_date, time):
         weekdays = self.get_days()
-        hour = self.end_time.hour
-        minute = self.end_time.minute
-        end_rrule = rrule(WEEKLY, dtstart=start_date, byweekday=weekdays,
-                          byhour=hour, byminute=minute, bysecond=0)
-        return end_rrule
+        return rrule(WEEKLY, dtstart=start_date, byweekday=weekdays,
+                     byhour=time.hour, byminute=time.minute, bysecond=0)
 
     def is_during_period(self, timestamp=None):
         if timestamp is None:
             timestamp = datetime.now()
-        next_start = self.get_start_timestamps(timestamp).next()
-        next_end = self.get_end_timestamps(timestamp).next()
+        next_start = self.get_start_timestamps(timestamp)[0]
+        next_end = self.get_end_timestamps(timestamp)[0]
         return next_end <= next_start
 
