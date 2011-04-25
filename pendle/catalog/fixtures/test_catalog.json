@@ -1,0 +1,128 @@
+[
+  {
+    "pk": 1, 
+    "model": "catalog.catalog", 
+    "fields": {
+      "receipt_signature": false, 
+      "receipt_epilogue": "", 
+      "name": "Test Catalog", 
+      "default_requirements": null, 
+      "default_fine_policy": null, 
+      "online": true, 
+      "default_reservation_duration": null, 
+      "receipt_prologue": ""
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "exact", 
+      "length": 1, 
+      "unit": "hour"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "period_end", 
+      "length": 1, 
+      "unit": "hour"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "exact", 
+      "length": 12, 
+      "unit": "hour"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "period_end", 
+      "length": 12, 
+      "unit": "hour"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "exact", 
+      "length": 1, 
+      "unit": "day"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "period_end", 
+      "length": 1, 
+      "unit": "day"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "exact", 
+      "length": 31, 
+      "unit": "day"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "period_end", 
+      "length": 31, 
+      "unit": "day"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "period_end", 
+      "length": 0, 
+      "unit": "period"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "catalog.reservationduration", 
+    "fields": {
+      "due_at": "period_end", 
+      "length": 1, 
+      "unit": "period"
+    }
+  }, 
+  {
+    "pk": 1, 
+    "model": "catalog.period", 
+    "fields": {
+      "catalog": 1, 
+      "end_time": "17:00:00", 
+      "start_time": "09:00:00", 
+      "name": "Weekdays 9-5", 
+      "days": "0,1,2,3,4"
+    }
+  },
+  {
+    "pk": 2, 
+    "model": "catalog.period", 
+    "fields": {
+      "catalog": 1, 
+      "end_time": "13:00:00", 
+      "start_time": "13:00:00", 
+      "name": "Weekdays 1 PM", 
+      "days": "0,1,2,3,4"
+    }
+  }
+]
