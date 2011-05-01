@@ -21,7 +21,7 @@ class ProductAutocomplete(AutocompleteSettings):
     search_fields = ('title', '^manufacturer__name')
 
 class AssetAutocomplete(AutocompleteSettings):
-    search_fields = ('^barcode', 'product__title')
+    search_fields = ('^barcode',)
 
 class BundleColumn(ChangeListColumn):
     allow_tags = True
