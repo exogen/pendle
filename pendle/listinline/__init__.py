@@ -37,6 +37,11 @@ class ListInlineFormset(BaseInlineFormSet):
             removal_field = forms.BooleanField(label=label, required=False)
             form.fields[REMOVAL_FIELD_NAME] = removal_field
 
+    def save_existing(self, form, instance, commit=True):
+        if self.can_remove and form.cleaned_data[REMOVAL_FIELD_NAME]:
+            setattr(instance, self.fk.name, None)
+        return super(ListInlineFormset, self).save_existing(form, instance, commit)
+
 
 class ListInline(InlineModelAdmin):
     template = "listinline/list.html"
