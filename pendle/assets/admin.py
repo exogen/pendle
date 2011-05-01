@@ -8,12 +8,20 @@ from django.db import models
 from listinline import ListInline
 from adminbrowse import (ChangeListColumn, ChangeListTemplateColumn,
                          link_to_change, link_to_changelist, template_column)
+from autocomplete.views import autocomplete, AutocompleteSettings
+from autocomplete.admin import AutocompleteAdmin
 
 from pendle.assets.models import (ProductType, PolicyCategory, Manufacturer,
                                   Product, Asset)
 from pendle.utils import add
 from pendle.utils.admin import PendleModelAdmin
 
+
+class ProductAutocomplete(AutocompleteSettings):
+    search_fields = ('title', '^manufacturer__name')
+
+class AssetAutocomplete(AutocompleteSettings):
+    search_fields = ('^barcode', 'product__title')
 
 class BundleColumn(ChangeListColumn):
     allow_tags = True
@@ -119,7 +127,7 @@ class BundledInline(ListInline):
     can_remove = True
     extra = 0
 
-class AssetAdmin(PendleModelAdmin):
+class AssetAdmin(AutocompleteAdmin, PendleModelAdmin):
     inlines = [BundledInline]
     list_display = ['barcode', 'product', BundleColumn("bundle"),
                     AvailabilityColumn("available?")]
@@ -151,4 +159,4 @@ admin.site.register(PolicyCategory, PolicyCategoryAdmin)
 admin.site.register(Manufacturer, ManufacturerAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Asset, AssetAdmin)
-
+autocomplete.register(Asset.bundle, AssetAutocomplete)

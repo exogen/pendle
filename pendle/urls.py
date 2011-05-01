@@ -4,20 +4,23 @@ from django.conf.urls.defaults import *
 from django.contrib import admin
 from django.conf import settings
 
+from pendle.assets.admin import autocomplete
+
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'pendle.views.home', name='home'),
-    url(r'^admin/', include('pendle.dashboard.urls',
-                            namespace='dashboard')),
-    url(r'^admin/', include('pendle.institution.urls',
-                            namespace='institution')),
-    url(r'^admin/', include('pendle.assets.urls',
-                            namespace='assets')),
-    url(r'^admin/', include('pendle.reservations.urls',
-                            namespace='reservations')),
-    url(r'^admin/', include(admin.site.urls)),
+    url('^$', 'pendle.views.home', name='home'),
+    url('^admin/', include('pendle.dashboard.urls',
+                           namespace='dashboard')),
+    url('^admin/', include('pendle.institution.urls',
+                           namespace='institution')),
+    url('^admin/', include('pendle.assets.urls',
+                           namespace='assets')),
+    url('^admin/', include('pendle.reservations.urls',
+                           namespace='reservations')),
+    url('^admin/', include(admin.site.urls)),
+    url('^autocomplete/', include(autocomplete.urls))
 )
 
 if settings.DEBUG:

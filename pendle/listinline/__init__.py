@@ -50,7 +50,7 @@ class ListInline(InlineModelAdmin):
     show_labels = True
     media = forms.Media(css={'all': ['listinline/css/list-inline.css']},
                         js=['js/jquery-1.5.1.min.js',
-                            'listinline/js/jquery-ui-1.8.12.custom.min.js',
+                            'js/jquery-ui-1.8.12.custom.min.js',
                             'listinline/js/sortable-inline.js'])
 
     def queryset(self, request):
@@ -72,3 +72,4 @@ class ListInline(InlineModelAdmin):
 
     def search_view(self, request):
         pass
+

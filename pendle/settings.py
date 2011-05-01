@@ -56,6 +56,7 @@ MEDIA_ROOT = os.path.join(SITE_ROOT, 'media')
 MEDIA_URL = '/media/'
 
 ADMINBROWSE_MEDIA_URL = '/media/adminbrowse/'
+AUTOCOMPLETE_MEDIA_PREFIX = '/media/autocomplete/'
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -112,6 +113,7 @@ INSTALLED_APPS = (
     'pendle.extras',
     'pendle.dashboard',
 )
+
 
 DEVSERVER_MODULES = (
     #'devserver.modules.sql.SQLRealTimeModule',
