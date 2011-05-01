@@ -1,6 +1,8 @@
 from django.contrib import admin
 from django.db import models
 from adminbrowse import link_to_change
+from autocomplete.views import autocomplete, AutocompleteSettings
+from autocomplete.admin import AutocompleteAdmin
 
 from pendle.fines.models import Fine, FinePayment
 from pendle.fines.widgets import DollarsInput
@@ -8,7 +10,10 @@ from pendle.utils.text import format_dollars
 from pendle.utils.admin import PendleModelAdmin
 
 
-class FineAdmin(PendleModelAdmin):
+class CustomerAutocomplete(AutocompleteSettings):
+    search_fields = ('^username', '^first_name', '^last_name', '^profile__id_number')
+
+class FineAdmin(AutocompleteAdmin, PendleModelAdmin):
     formfield_overrides = {
         models.DecimalField: {'widget': DollarsInput, 'localize': True}}
     list_display = ['amount_dollars', link_to_change(Fine, 'customer'),
@@ -27,7 +32,7 @@ class FineAdmin(PendleModelAdmin):
         return super(FineAdmin, self).formfield_for_foreignkey(
             db_field, request, **kwargs)
 
-class FinePaymentAdmin(PendleModelAdmin):
+class FinePaymentAdmin(AutocompleteAdmin, PendleModelAdmin):
     formfield_overrides = {
         models.DecimalField: {'widget': DollarsInput, 'localize': True}}
     list_display = ['amount_dollars', link_to_change(FinePayment, 'customer'),
@@ -49,4 +54,5 @@ class FinePaymentAdmin(PendleModelAdmin):
 
 admin.site.register(Fine, FineAdmin)
 admin.site.register(FinePayment, FinePaymentAdmin)
-
+autocomplete.register(Fine.customer, CustomerAutocomplete)
+autocomplete.register(FinePayment.customer, CustomerAutocomplete)

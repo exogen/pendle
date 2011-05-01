@@ -5,7 +5,7 @@ from django.contrib import admin
 from django.conf import settings
 
 from pendle.assets.admin import autocomplete
-
+from pendle.fines.admin import autocomplete
 
 admin.autodiscover()
 
