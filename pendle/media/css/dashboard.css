@@ -31,7 +31,12 @@
     float: left;
 }
 
+.column.left {
+    max-width: 69%;
+}
+
 #calendar table {
+    width: 100%;
     border: 1px solid #ccc;
     border-collapse: separate;
     border-spacing: 0;
