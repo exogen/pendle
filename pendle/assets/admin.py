@@ -22,6 +22,7 @@ class ProductAutocomplete(AutocompleteSettings):
 
 class AssetAutocomplete(AutocompleteSettings):
     search_fields = ('^barcode',)
+    limit = 15
 
 class BundleColumn(ChangeListColumn):
     allow_tags = True

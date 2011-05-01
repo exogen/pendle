@@ -11,6 +11,7 @@ from pendle.utils.admin import PendleModelAdmin
 
 
 class CustomerAutocomplete(AutocompleteSettings):
+    limit = 15
     search_fields = ('^username', '^first_name', '^last_name', '^profile__id_number')
 
 class FineAdmin(AutocompleteAdmin, PendleModelAdmin):
