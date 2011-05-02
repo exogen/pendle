@@ -365,7 +365,39 @@ body.change-form .ui-autocomplete li {
 body.change-form .ui-autocomplete-values .ui-autocomplete-value {
     width: 200px;
 }
+
 body.change-form .ui-autocomplete-values .ui-autocomplete-value a {
     float: right;
+}
+
+body.change-form li.ui-menu-item {
+}
+
+body.change-form li.ui-menu-item .barcode,
+body.change-form li.ui-menu-item .name {
+    font-weight: bold;
+}
+
+body.change-form li.ui-menu-item .product,
+body.change-form li.ui-menu-item .username {
+    display: inline-block;
+    color: #666;
+    max-width: 20em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.change-form li.ui-menu-item .sep {
+    color: #bbb;
+}
+
+body.change-form li.ui-menu-item a.ui-state-hover .sep {
+    color: #9ac;
+}
+
+body.change-form li.ui-menu-item a.ui-state-hover .product,
+body.change-form li.ui-menu-item a.ui-state-hover .username {
+    color: #eff;
 }
 

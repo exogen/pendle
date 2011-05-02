@@ -14,6 +14,10 @@ class CustomerAutocomplete(AutocompleteSettings):
     limit = 15
     search_fields = ('^username', '^first_name', '^last_name', '^profile__id_number')
 
+    def label(self, user):
+        return '<span class="name">%s</span> <span class="username">(%s)</span>' % (
+            user.get_full_name(), user.username)
+
 class FineAdmin(AutocompleteAdmin, PendleModelAdmin):
     formfield_overrides = {
         models.DecimalField: {'widget': DollarsInput, 'localize': True}}

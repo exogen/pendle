@@ -24,6 +24,10 @@ class AssetAutocomplete(AutocompleteSettings):
     search_fields = ('^barcode',)
     limit = 15
 
+    def label(self, asset):
+        return '<span class="barcode">%s</span><span class="sep"> &mdash; </span><span class="product">%s</span>' % (
+            asset.barcode, asset.product.title)
+
 class BundleColumn(ChangeListColumn):
     allow_tags = True
     bundle_link = link_to_change(Asset, 'bundle')
