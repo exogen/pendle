@@ -412,3 +412,11 @@ body.change-form li.ui-menu-item a.ui-state-hover .manufacturer {
 body.change-form .form-row.product input.ui-autocomplete-input {
     min-width: 32em;
 }
+
+#_bundled_bundle-group td.original p {
+    display: none;
+}
+
+#_bundled_bundle-group tr.has_original td {
+    padding-top: 5px;
+}

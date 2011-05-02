@@ -12,7 +12,7 @@ from autocomplete.views import autocomplete, AutocompleteSettings
 from autocomplete.admin import AutocompleteAdmin
 
 from pendle.assets.models import (ProductType, PolicyCategory, Manufacturer,
-                                  Product, Asset)
+                                  Product, Asset, BundledAsset)
 from pendle.utils import add
 from pendle.utils.admin import PendleModelAdmin
 
@@ -131,15 +131,24 @@ class ProductAdmin(PendleModelAdmin):
                                     'title', 'description',
                                     ('model_name', 'model_year')]})]
 
-class BundledInline(ListInline):
-    model = Asset
-    fields = ['product', 'bundle_order']
-    readonly_fields = ['product']
-    ordering = ['bundle_order']
-    verbose_name = "asset"
-    verbose_name_plural = "bundled assets"
-    can_remove = True
+#class BundledInline(ListInline):
+#    model = Asset
+#    fields = ['product', 'bundle_order']
+#    readonly_fields = ['product']
+#    ordering = ['bundle_order']
+#    verbose_name = "asset"
+#    verbose_name_plural = "bundled assets"
+#    can_remove = True
+#    extra = 0
+
+class BundledInline(AutocompleteAdmin, admin.TabularInline):
+    model = Asset.bundled.through
+    fk_name = 'bundle'
     extra = 0
+    ordering = ['order']
+    verbose_name = "bundled asset"
+    verbose_name_plural = "bundled assets"
+    template = "listinline/list.html"
 
 class AssetAdmin(AutocompleteAdmin, PendleModelAdmin):
     inlines = [BundledInline]
@@ -175,3 +184,4 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(Asset, AssetAdmin)
 autocomplete.register(Asset.product, ProductAutocomplete)
 autocomplete.register(Asset.bundle, AssetAutocomplete)
+autocomplete.register(BundledAsset.asset, AssetAutocomplete)

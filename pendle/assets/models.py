@@ -2,7 +2,7 @@
 from datetime import datetime
 
 from django.db import models
-from django.db.models import permalink, Q
+from django.db.models import permalink, Q, F
 from django.db.models.query import QuerySet
 from django.contrib.auth.models import User
 
@@ -129,6 +129,29 @@ class AssetManager(models.Manager):
         return self.filter(checked_out | offline | unreservable, *args,
             **kwargs).distinct()
 
+class BundledAsset(models.Model):
+    bundle = models.ForeignKey('Asset', related_name='_bundled_bundle')
+    asset = models.ForeignKey('Asset', related_name='_bundled_asset',
+        unique=True,
+        limit_choices_to={'_bundled_bundle__isnull': True})
+    order = models.IntegerField(blank=True, null=True)
+    
+    def __unicode__(self):
+        return unicode(self.asset)
+
+    def save(self, *args, **kwargs):
+        if self.order is None and self.bundle is not None:
+            siblings = BundledAsset.objects.filter(bundle=self.bundle)
+            order = siblings.aggregate(max=models.Max('order'))
+            if order['max'] is None:
+                self.order = 1
+            else:
+                self.order = order['max'] + 1
+        super(BundledAsset, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ['order']
+
 class Asset(models.Model):
     CONDITION_CHOICES = (('unopened', "Unopened"),
                          ('like_new', "Like new"),
@@ -140,9 +163,11 @@ class Asset(models.Model):
                                 default=Catalog.objects.get_or_default)
     product = models.ForeignKey(Product, related_name='assets')
     bundle = models.ForeignKey('self', null=True, blank=True,
-        related_name='bundled_assets',
+        related_name='_bundled_assets',
+        limit_choices_to={'bundle__isnull': True},
         help_text="The bundle in which this asset is included.")
     bundle_order = models.IntegerField(blank=True, null=True)
+    bundled_assets = models.ManyToManyField('self', through='BundledAsset', symmetrical=False)
     barcode = models.CharField(max_length=75)
     new_barcode = models.BooleanField("needs new barcode printed",
                                       default=True)
@@ -184,7 +209,7 @@ class Asset(models.Model):
 
     class Meta:
         unique_together = [('catalog', 'barcode')]
-        ordering = ['catalog', 'product', 'barcode']
+        ordering = ['barcode']
         get_latest_by = 'date_added'
 
     def __unicode__(self):
