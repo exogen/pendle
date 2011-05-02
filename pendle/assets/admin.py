@@ -75,6 +75,7 @@ class AvailabilityColumn(ChangeListTemplateColumn):
 class ProductTypeAdmin(PendleModelAdmin):
     list_display = ['__unicode__',
                     link_to_changelist(ProductType, 'products')]
+    search_fields = ['name']
 
     #@add(list_display, "assets", allow_tags=True)
     def list_assets(self, product_type):
