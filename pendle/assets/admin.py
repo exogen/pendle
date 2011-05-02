@@ -142,7 +142,7 @@ class ProductAdmin(PendleModelAdmin):
 #    extra = 0
 
 class BundledInline(AutocompleteAdmin, admin.TabularInline):
-    model = Asset.bundled.through
+    model = Asset.bundled_assets.through
     fk_name = 'bundle'
     extra = 0
     ordering = ['order']
