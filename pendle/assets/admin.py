@@ -19,6 +19,14 @@ from pendle.utils.admin import PendleModelAdmin
 
 class ProductAutocomplete(AutocompleteSettings):
     search_fields = ('title', '^manufacturer__name')
+    limit = 15
+
+    def label(self, product):
+        if product.manufacturer:
+            return '<span class="manufacturer">%s</span> <span class="title">%s</span>' % (
+                product.manufacturer, product)
+        else:
+            return '<span class="title">%s</span>' % (product,)
 
 class AssetAutocomplete(AutocompleteSettings):
     search_fields = ('^barcode',)
@@ -164,4 +172,5 @@ admin.site.register(PolicyCategory, PolicyCategoryAdmin)
 admin.site.register(Manufacturer, ManufacturerAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(Asset, AssetAdmin)
+autocomplete.register(Asset.product, ProductAutocomplete)
 autocomplete.register(Asset.bundle, AssetAutocomplete)

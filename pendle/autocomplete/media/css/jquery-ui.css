@@ -370,10 +370,8 @@ body.change-form .ui-autocomplete-values .ui-autocomplete-value a {
     float: right;
 }
 
-body.change-form li.ui-menu-item {
-}
-
 body.change-form li.ui-menu-item .barcode,
+body.change-form li.ui-menu-item .title,
 body.change-form li.ui-menu-item .name {
     font-weight: bold;
 }
@@ -386,6 +384,12 @@ body.change-form li.ui-menu-item .username {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+body.change-form li.ui-menu-item .manufacturer {
+    float: right;
+    margin-left: 20px;
+    color: #888;
 }
 
 body.change-form li.ui-menu-item .sep {
@@ -401,3 +405,10 @@ body.change-form li.ui-menu-item a.ui-state-hover .username {
     color: #eff;
 }
 
+body.change-form li.ui-menu-item a.ui-state-hover .manufacturer {
+    color: #dee;
+}
+
+body.change-form .form-row.product input.ui-autocomplete-input {
+    min-width: 32em;
+}
