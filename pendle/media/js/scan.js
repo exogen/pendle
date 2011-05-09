@@ -116,12 +116,19 @@ pendle.Asset = pendle.Model.registry.types['assets:asset'] = function(data) {
 	*/
 	this.box = ko.observable(null);
 	this.confirmed = ko.observable(false);
+	this.renewed = ko.observable(false);
+	this.renewed.subscribe(function(value) {
+		if (value) {
+			this.confirmed(true);
+		}
+	}.bind(this));
 	this.confirmed.subscribe(function(value) {
 		pendle.transaction.asset.focused(true);
 		if (value) {
 			pendle.transaction.add(this);
 		}
 		else {
+			this.renewed(false);
 			var remove = this.box().remove; // Safety first.
 			if (remove) {
 				this.box(null);
@@ -178,6 +185,9 @@ pendle.Asset.prototype.init = function() {
 			}
 		}
 		return true;
+	}.bind(this);
+	this.renew = function() {
+		this.renewed(true);
 	}.bind(this);
 };
 
@@ -297,7 +307,8 @@ pendle.Scanner.prototype.load = function(form) {
 
 pendle.Transaction = function(customer, asset) {
 	this.templates = {
-		asset: 'transaction-asset-template'
+		asset: 'transaction-asset-template',
+		renewal: 'transaction-renewal-template'
 	}
 	this.customer = customer;
 	this.customer.result.subscribe(function(value) {
@@ -335,6 +346,16 @@ pendle.Transaction = function(customer, asset) {
 			value[i].box(this);
 		}
 	}.bind(this.outbox));
+	this.renewals = ko.dependentObservable(function() {
+		var assets = [];
+		var inbox = this.inbox();
+		for (var i = 0; i < inbox.length; i++) {
+			if (inbox[i].renewed()) {
+				assets.push(inbox[i]);
+			}
+		}
+		return assets;
+	}, this);
 	this.dueDate = ko.observable();
 	this.hasCustomDueDate = ko.observable(false);
 	this.toggleDueDate = function() {
@@ -345,6 +366,9 @@ pendle.Transaction = function(customer, asset) {
 		else {
 			if (!this.dueDate()) {
 				var assets = this.outbox();
+				if (!assets.length) {
+					assets = this.renewals();
+				}
 				var dueDate = null;
 				for (var i = 0; i < assets.length; i++) {
 					if (assets[i].due_date) {

@@ -109,6 +109,7 @@ body {
 .receipt li .due {
     float: right;
     color: #666;
+    margin-left: 10px;
 }
 
 .receipt li .due .timestamp {

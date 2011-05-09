@@ -63,7 +63,8 @@ def new_transaction(request, transaction_key):
                 else:
                     print 'No current reservation'
 
-            assets_out_ids = request.POST.getlist('asset_out')
+            renew_ids = request.POST.getlist('renew')
+            assets_out_ids = renew_ids + request.POST.getlist('asset_out')
             assets_out = Asset.objects.in_bulk(assets_out_ids)
             custom_due_date = form.cleaned_data['due_date']
             for asset_id, asset in assets_out.iteritems():

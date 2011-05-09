@@ -37,18 +37,21 @@
     <dt>Customer</dt><dd>{{ transaction.customer }}</dd>
     <dt>Staff member</dt><dd>{{ transaction.staff_member }}</dd>
   </dl>
-  <h2>Checked in: <span class="count">{{ transaction.reservations_in.count }}</span></h2>
+  {% with transaction.reservations_in_unrenewed as reservations %}
+  <h2>Checked in: <span class="count">{{ reservations.count }}</span></h2>
   <ul class="in">
-    {% for reservation in transaction.reservations_in.all %}
+    {% for reservation in reservations.all %}
     <li>
       <span class="barcode">{{ reservation.asset }}</span>
       <span class="product">{{ reservation.asset.product }}</span>
     </li>
     {% endfor %}
   </ul>
-  <h2>Checked out: <span class="count">{{ transaction.reservations_out.count }}</span></h2>
-  <ul class="out">
-    {% for reservation in transaction.reservations_out.all %}
+  {% endwith %}
+  {% with transaction.renewals as reservations %}
+  <h2>Renewed: <span class="count">{{ reservations.count }}</span></h2>
+  <ul class="renewed">
+    {% for reservation in reservations.all %}
     <li>
       {% if reservation.due_date %}
       <span class="due">Due by <span class="timestamp">{{ reservation.due_date }}</span></span>
@@ -60,6 +63,23 @@
     </li>
     {% endfor %}
   </ul>
+  {% endwith %}
+  {% with transaction.reservations_out_unrenewed as reservations %}
+  <h2>Checked out: <span class="count">{{ reservations.count }}</span></h2>
+  <ul class="out">
+    {% for reservation in reservations.all %}
+    <li>
+      {% if reservation.due_date %}
+      <span class="due">Due by <span class="timestamp">{{ reservation.due_date }}</span></span>
+      {% else %}
+      <span class="due empty">Due date not specified</span>
+      {% endif %}
+      <span class="barcode">{{ reservation.asset }}</span>
+      <span class="product">{{ reservation.asset.product }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endwith %}
   {% if catalog.receipt_epilogue %}
   <div class="epilogue">{{ catalog.receipt_epilogue|markdown }}</div>
   {% endif %}

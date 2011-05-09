@@ -42,6 +42,7 @@
 <script id="reservation-bundled-asset-template" type="text/html">
   {% templatetag openbrace %}{if reservation }}
   <li data-bind="css: {confirmed: confirmed, overdue: reservation.overdue}">
+    <button type="button" class="renew" title="Renew" data-bind="click: renew"></button>
     <label><input type="checkbox" class="check-confirm" data-bind="checked: confirmed"/>
       <span class="barcode" data-bind="text: fields.barcode,
         tooltip: reservation.overdue ? 'Asset is overdue' : ''"></span></label>
@@ -52,6 +53,7 @@
 <script id="customer-reservation-template" type="text/html">
   {% templatetag openbrace %}{if !asset.bundle || !transaction.customer.assets[asset.bundle.pk] }}
   <li data-bind="css: {confirmed: asset.confirmed, overdue: overdue}">
+    <button type="button" class="renew" title="Renew" data-bind="click: asset.renew"></button>
     <label><input type="checkbox" class="check-confirm" data-bind="checked: asset.confirmed"/>
       <span class="barcode" data-bind="text: asset.fields.barcode,
         tooltip: overdue ? 'Asset is overdue' : ''"></span></label>
@@ -83,12 +85,23 @@
 <script id="asset-reservation-template" type="text/html">
   Checked out by <span class="customer" data-bind="text: transaction.customer"></span>
 </script>
+<script id="transaction-renewal-template" type="text/html">
+  <li class="renewal">
+    <label>
+      <span class="barcode" data-bind="text: fields.barcode"></span>
+    </label>
+  </li>
+</script>
 <script id="transaction-asset-template" type="text/html">
   {% templatetag openbrace %}{if !bundle || !bundle.confirmed()}}
   <li>
     <label>
       {% templatetag openbrace %}{if reservation}}
       <input type="checkbox" name="asset_in" class="check-confirm" data-bind="value: pk, checked: confirmed"/>
+      <label class="renew">
+        <input type="checkbox" name="renew" class="check-renew" data-bind="value: pk, checked: renewed"/>
+        Renew
+      </label>
       {% templatetag openbrace %}{else}}
       <input type="checkbox" name="asset_out" class="check-confirm" data-bind="value: pk, checked: confirmed"/>
       {% templatetag openbrace %}{/if}}
@@ -112,6 +125,10 @@
     <label>
       {% templatetag openbrace %}{if reservation}}
       <input type="checkbox" name="asset_in" class="check-confirm" data-bind="value: pk, checked: confirmed, disable: !bundleSynced()"/>
+      <label class="renew">
+        <input type="checkbox" name="renew" class="check-renew" data-bind="value: pk, checked: renewed"/>
+        Renew
+      </label>
       {% templatetag openbrace %}{else}}
       <input type="checkbox" name="asset_out" class="check-confirm" data-bind="value: pk, checked: confirmed, disable: !bundleSynced()"/>
       {% templatetag openbrace %}{/if}}
@@ -169,18 +186,24 @@
   <h2>Transaction summary</h2>
   <p class="help">Scan items to add them to this transaction.</p>
   <div id="transaction-details">
-    <h3 class="inbox"><span class="count" data-bind="text: inbox().length"></span> in</h3>
+    <h3 class="inbox"><span class="count" data-bind="text: inbox().length - renewals().length"></span> in
+      <span class="renewals" data-bind="visible: renewals().length">
+        / <span class="count" data-bind="text: renewals().length"></span> renewed</span>
+    </h3>
     <ul id="inbox" class="assets"
         data-bind="template: {foreach: inbox, name: templates.asset,
                               afterAdd: pendle.slideIn, beforeRemove: pendle.slideOut}"></ul>
-    <h3 class="outbox"><span class="count" data-bind="text: outbox().length"></span> out</h3>
+    <h3 class="outbox"><span class="count" data-bind="text: outbox().length"></span> out
+      <span class="renewals" data-bind="visible: renewals().length">
+        / <span class="count" data-bind="text: renewals().length"></span> renewed</span>
+    </h3>
     <ul id="outbox" class="assets"
         data-bind="template: {foreach: outbox, name: templates.asset,
                               afterAdd: pendle.slideIn, beforeRemove: pendle.slideOut}"></ul>
   </div>
   <div class="submit-row">
     {% csrf_token %}
-    <div class="due-date" data-bind="visible: outbox().length">
+    <div class="due-date" data-bind="visible: outbox().length + renewals().length">
       <a href="#" data-bind="visible: !hasCustomDueDate(), click: toggleDueDate">Customize due date</a>
       <div class="due-date-field" data-bind="visible: hasCustomDueDate">
         <label for="transaction-due_date">Due date</label>

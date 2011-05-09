@@ -188,6 +188,21 @@ dd.assets ul.reservations li {
 	overflow: hidden;
 }
 
+dd.assets ul.reservations li button.renew {
+    position: relative;
+    float: right;
+    width: 20px;
+    height: 20px;
+    background: #eef8ff url('../images/renew.png') no-repeat 100% 50%;
+    border: 0;
+    cursor: pointer;
+    z-index: 100;
+}
+
+dd.assets ul.reservations li.confirmed > button.renew {
+    visibility: hidden;
+}
+
 dd.assets ul.reservations li.confirmed > label,
 dd.assets ul.reservations li.confirmed > span.product {
     opacity: 0.5;
@@ -228,6 +243,7 @@ dd.assets ul.reservations li span.product {
 	color: #789;
 	position: absolute;
 	white-space: nowrap;
+    z-index: 99;
 }
 
 dd.fines span.due {
@@ -479,6 +495,17 @@ div.browse ul.filter li a:hover {
 	padding: 0;
 	color: #333;
 	cursor: pointer;
+}
+
+#transaction ul.assets li label.renew {
+    float: right;
+    font-size: 10px;
+    font-weight: normal !important;
+    padding-left: 10px;
+}
+
+#transaction ul.assets li input.check-renew {
+    margin-right: 2px;
 }
 
 #transaction ul.assets li span.bundled {

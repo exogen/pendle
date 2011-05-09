@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from django.db import models
-from django.db.models import permalink, Q
+from django.db.models import permalink, Q, F
 from django.contrib.auth.models import User
 
 from pendle.catalog.models import Catalog
@@ -29,6 +29,18 @@ class Transaction(models.Model):
         return ('admin:reservations_transaction_change', [self.pk])
 
     @property
+    def renewals(self):
+        return self.reservations_out.renewed()
+
+    @property
+    def reservations_in_unrenewed(self):
+        return self.reservations_in.exclude(asset__reservations__transaction_out=self)
+
+    @property
+    def reservations_out_unrenewed(self):
+        return self.reservations_out.exclude(asset__reservations__transaction_in=self)
+
+    @property
     def assets(self):
         out = Q(reservations__transaction_out=self)
         in_ = Q(reservations__transaction_in=self)
@@ -41,6 +53,11 @@ class Transaction(models.Model):
     @property
     def assets_in(self):
         return Asset.objects.filter(reservations__transaction_in=self)
+
+    @property
+    def assets_renewed(self):
+        return Asset.objects.filter(reservations__transaction_out=self).filter(
+            reservations__transaction_in=F('reservations__transaction_out'))
 
 class ReservationManager(models.Manager):
     def checked_out(self, *args, **kwargs):
@@ -56,6 +73,10 @@ class ReservationManager(models.Manager):
             now = datetime.now()
         kwargs.update(due_date__lt=now)
         return self.checked_out(*args, **kwargs)
+
+    def renewed(self, *args, **kwargs):
+        kwargs.update(transaction_out=F('asset__reservations__transaction_in'))
+        return self.filter(*args, **kwargs)
 
 class Reservation(models.Model):
     asset = models.ForeignKey(Asset, related_name='reservations')
@@ -98,4 +119,12 @@ class Reservation(models.Model):
             return True
     is_on_time.boolean = True
     is_on_time.short_description = "on time?"
+
+    def was_renewed(self):
+        if self.transaction_in:
+            return self.transaction_in.reservations_out.filter(
+                asset=self.asset).exists()
+        return False
+    was_renewed.boolean = True
+    was_renewed.short_description = "renewed?"
 
