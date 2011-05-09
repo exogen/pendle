@@ -31,8 +31,8 @@
       <tr>
         <td>{{ product }}</td>
         <td>{{ product.manufacturer }}</td>
-        <td>{{ product.assets.available.count }}</td>
-        <td>{{ product.reservation_count }}</td>
+        <td align="right">{{ product.assets.available.count }}</td>
+        <td align="right">{{ product.reservation_count }}</td>
       </tr>
       {% endfor %}
     </body>
