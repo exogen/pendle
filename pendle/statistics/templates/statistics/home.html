@@ -29,7 +29,7 @@
     <tbody>
       {% for product in most_reserved %}
       <tr>
-        <td>{{ product }}</td>
+        <td><a href="{{ product.get_absolute_url }}">{{ product }}</a></td>
         <td>{{ product.manufacturer }}</td>
         <td align="right">{{ product.assets.available.count }}</td>
         <td align="right">{{ product.reservation_count }}</td>
@@ -53,7 +53,7 @@
     <tbody>
       {% for asset in oldest %}
       <tr>
-        <td>{{ asset }}</td>
+        <td><a href="{{ asset.get_absolute_url }}">{{ asset }}</a></td>
         <td>{{ asset.product }}</td>
         <td>{{ asset.product.manufacturer }}</td>
         <td>{{ asset.purchase_date|date }}</td>

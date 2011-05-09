@@ -112,6 +112,7 @@ INSTALLED_APPS = (
     'pendle.fines',
     'pendle.extras',
     'pendle.dashboard',
+    'pendle.statistics',
 )
 
 
