@@ -21,7 +21,8 @@
   <a href="{% url admin:assets_asset_changelist %}">Assets</a> &bull;
   <a href="{% url admin:auth_user_changelist %}">Users</a> &bull;
   <a href="{% url admin:reservations_transaction_changelist %}">Transactions</a> &bull;
-  <a href="{% url admin:extras_note_changelist %}">Notes</a>
+  <a href="{% url admin:extras_note_changelist %}">Notes</a> &bull;
+  <a href="{% url statistics:home %}">Statistics</a>
 </div>
 {% endif %}
 {{ block.super }}

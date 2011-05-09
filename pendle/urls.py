@@ -19,6 +19,8 @@ urlpatterns = patterns('',
                            namespace='assets')),
     url('^admin/', include('pendle.reservations.urls',
                            namespace='reservations')),
+    url('^admin/', include('pendle.statistics.urls',
+                           namespace='statistics')),
     url('^admin/', include(admin.site.urls)),
     url('^autocomplete/', include(autocomplete.urls))
 )

@@ -1,0 +1,66 @@
+{% extends "admin/base_site.html" %}
+{% load i18n adminmedia %}
+
+{% block extrastyle %}{{ block.super }}
+<link rel="stylesheet" type="text/css" media="all" href="{{ MEDIA_URL }}css/stats.css" />
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url admin:index %}">{% trans "Home" %}</a> &rsaquo; Statistics
+</div>
+{% endblock %}
+
+{% block content %}
+
+<p class="help catalog">{{ catalog }}</p>
+
+<div class="column">
+  <h2>Most popular products</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Manufacturer</th>
+        <th>Quantity</th>
+        <th>Reservations</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for product in most_reserved %}
+      <tr>
+        <td>{{ product }}</td>
+        <td>{{ product.manufacturer }}</td>
+        <td>{{ product.assets.available.count }}</td>
+        <td>{{ product.reservation_count }}</td>
+      </tr>
+      {% endfor %}
+    </body>
+  </table>
+</div>
+
+<div class="column">
+  <h2>Oldest assets</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Barcode</th>
+        <th>Product</th>
+        <th>Manufacturer</th>
+        <th>Purchase date</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for asset in oldest %}
+      <tr>
+        <td>{{ asset }}</td>
+        <td>{{ asset.product }}</td>
+        <td>{{ asset.product.manufacturer }}</td>
+        <td>{{ asset.purchase_date|date }}</td>
+      </tr>
+      {% endfor %}
+    </body>
+  </table>
+</div>
+
+{% endblock %}
