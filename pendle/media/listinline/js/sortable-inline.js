@@ -15,7 +15,7 @@ jQuery(function($) {
                 var item = $(this);
                 var is_new = !item.find('input[name$=-id]:first').val();
                 if (!is_new) {
-                    item.find('input[name$=-order]').val(i + 1);
+                    item.find('input[name$=-bundle_order]').val(i + 1);
                 }
             });
         }

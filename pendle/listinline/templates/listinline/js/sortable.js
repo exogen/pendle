@@ -1,9 +1,9 @@
 jQuery(function($) {
-    $('#{{ group_id }}.inline-group').find('tbody').sortable({
+    $('#{{ group_id }}.list-inline').sortable({
         cancel: 'a, label, :input',
         containment: 'parent',
         cursor: 'move',
-        items: 'tr',
+        items: 'li.inline-related',
         revert: 150,
         scrollSensitivity: 30,
         scrollSpeed: 10,
@@ -15,7 +15,7 @@ jQuery(function($) {
                 var is_new = !item.find(':input[name^={{ inline_admin_formset.formset.prefix }}-]' +
                                               '[name$=-{{ inline_admin_formset.opts.opts.pk.name }}]').val();
                 if (!is_new) {
-                    item.find('input[name$=-order]').val(i + 1);
+                    item.find('input[name$=-bundle_order]').val(i + 1);
                 }
             });
         }
